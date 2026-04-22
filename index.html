@@ -369,6 +369,7 @@ async function renderTable() {
     `<tr><td colspan="${MONTHS.length+1}"><div class="section-loading"><div class="mini-spinner"></div> Cargando…</div></td></tr>`;
 
   const { data } = await sb.from('volumenes').select('id_producto, mes, valor')
+    .eq('username', currentUser.username)
     .eq('contrato', contrato).eq('anio', anio).eq('id_lugar', planta.ID_LUGAR_ENTREGA);
 
   volCache = {};
@@ -445,7 +446,7 @@ async function saveData() {
   let ok = true;
   if (rows.length > 0) {
     const { error } = await sb.from('volumenes')
-      .upsert(rows, { onConflict: 'contrato,anio,id_lugar,id_producto,mes' });
+      .upsert(rows, { onConflict: 'username,contrato,anio,id_lugar,id_producto,mes' });
     if (error) { ok=false; console.error(error); }
   }
 
@@ -577,6 +578,7 @@ async function saveAdmin() {
     for (const [i,p] of draftProducts.entries()) {
       if (p.ID_PRODUCTO) await sb.from('productos').update({ Producto: p.Producto, orden:i }).eq('ID_PRODUCTO', p.ID_PRODUCTO);
     }
+    // Solo reemplazar asignaciones de usuarios que estén en el draft
     for (const u of Object.keys(draftUserPlants)) {
       await sb.from('usuario_plantas').delete().eq('username', u);
       const rows = (draftUserPlants[u]||[]).map(id => ({ username:u, id_lugar:id }));
