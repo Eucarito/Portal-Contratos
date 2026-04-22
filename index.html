@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de Contratos</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f13; --surface: #16161d; --surface2: #1e1e28;
+    --border: #2a2a38; --accent: #c8f04a; --accent2: #7c6af7;
+    --text: #e8e8f0; --muted: #6b6b80; --danger: #f04a6a;
+    --success: #4af0a0; --radius: 12px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  #global-loader { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:999; flex-direction:column; gap:16px; }
+  .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; }
+  .mini-spinner { width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; display:inline-block; vertical-align:middle; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loader-text { color:var(--muted); font-size:14px; }
+  #login-screen { min-height:100vh; display:none; align-items:center; justify-content:center; background:radial-gradient(ellipse 80% 60% at 50% 0%, #1a1a2e 0%, var(--bg) 70%); }
+  .login-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:48px 40px; width:420px; box-shadow:0 40px 80px rgba(0,0,0,.5); }
+  .login-logo { font-family:'DM Serif Display',serif; font-size:28px; color:var(--accent); margin-bottom:8px; }
+  .login-subtitle { color:var(--muted); font-size:14px; margin-bottom:36px; }
+  .field-label { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+  .field-input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:12px 16px; color:var(--text); font-family:inherit; font-size:15px; outline:none; transition:border-color .2s; margin-bottom:20px; }
+  .field-input:focus { border-color:var(--accent2); }
+  .btn-primary { width:100%; background:var(--accent); color:#0f0f13; border:none; border-radius:var(--radius); padding:14px; font-family:inherit; font-size:15px; font-weight:700; cursor:pointer; transition:opacity .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .btn-primary:hover { opacity:.9; }
+  .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+  .error-msg { color:var(--danger); font-size:13px; margin-top:-12px; margin-bottom:16px; min-height:18px; }
+  .hint { font-size:12px; color:var(--muted); margin-top:12px; padding:10px 14px; background:var(--surface2); border-radius:8px; }
+  #app-screen { display:none; min-height:100vh; }
+  .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 32px; height:64px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .topbar-logo { font-family:'DM Serif Display',serif; font-size:22px; color:var(--accent); }
+  .topbar-right { display:flex; align-items:center; gap:16px; }
+  .user-chip { display:flex; align-items:center; gap:10px; background:var(--surface2); border:1px solid var(--border); border-radius:99px; padding:6px 16px 6px 8px; font-size:13px; font-weight:500; }
+  .user-avatar { width:28px; height:28px; background:var(--accent2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; }
+  .btn-logout { background:none; border:1px solid var(--border); border-radius:var(--radius); padding:7px 14px; color:var(--muted); font-family:inherit; font-size:13px; cursor:pointer; transition:all .2s; }
+  .btn-logout:hover { border-color:var(--danger); color:var(--danger); }
+  .nav-tabs { display:flex; gap:4px; padding:0 32px; background:var(--surface); border-bottom:1px solid var(--border); }
+  .nav-tab { background:none; border:none; border-bottom:2px solid transparent; padding:14px 20px; color:var(--muted); font-family:inherit; font-size:14px; font-weight:500; cursor:pointer; white-space:nowrap; transition:all .2s; margin-bottom:-1px; display:flex; align-items:center; gap:8px; }
+  .nav-tab:hover { color:var(--text); }
+  .nav-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+  .main-content { max-width:1300px; margin:0 auto; padding:40px 32px; }
+  .page-title { font-family:'DM Serif Display',serif; font-size:32px; margin-bottom:6px; }
+  .page-sub { color:var(--muted); font-size:14px; margin-bottom:32px; }
+  .controls-bar { display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap; margin-bottom:32px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; }
+  .control-group { display:flex; flex-direction:column; gap:6px; }
+  .control-select { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:9px 14px; color:var(--text); font-family:inherit; font-size:14px; outline:none; cursor:pointer; min-width:160px; }
+  .control-select:focus { border-color:var(--accent2); }
+  .btn-save { background:var(--accent); color:#0f0f13; border:none; border-radius:8px; padding:10px 24px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; margin-left:auto; transition:opacity .2s; display:flex; align-items:center; gap:8px; }
+  .btn-save:hover { opacity:.88; }
+  .btn-save:disabled { opacity:.5; cursor:not-allowed; }
+  .save-status { font-size:13px; display:flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; opacity:0; transition:opacity .3s; }
+  .save-status.show { opacity:1; }
+  .save-status.ok  { background:rgba(74,240,160,.12); color:var(--success); border:1px solid rgba(74,240,160,.25); }
+  .save-status.err { background:rgba(240,74,106,.12); color:var(--danger);  border:1px solid rgba(240,74,106,.25); }
+  .plant-tabs { display:flex; gap:4px; overflow-x:auto; border-bottom:1px solid var(--border); scrollbar-width:none; }
+  .plant-tabs::-webkit-scrollbar { display:none; }
+  .tab-btn { background:none; border:none; border-bottom:2px solid transparent; padding:12px 20px; color:var(--muted); font-family:inherit; font-size:14px; font-weight:500; cursor:pointer; white-space:nowrap; transition:all .2s; margin-bottom:-1px; }
+  .tab-btn:hover { color:var(--text); }
+  .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+  .table-wrapper { background:var(--surface); border:1px solid var(--border); border-top:none; border-radius:0 0 var(--radius) var(--radius); overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  thead tr { background:var(--surface2); }
+  th { padding:14px 16px; text-align:center; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); border-bottom:1px solid var(--border); white-space:nowrap; }
+  th:first-child { text-align:left; min-width:160px; position:sticky; left:0; background:var(--surface2); z-index:10; }
+  td { border-bottom:1px solid var(--border); padding:0; }
+  td:first-child { padding:12px 16px; font-weight:500; font-size:13px; color:var(--text); position:sticky; left:0; background:var(--surface); z-index:5; border-right:1px solid var(--border); }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td:first-child { background:var(--surface2); }
+  .cell-input { width:100%; min-width:90px; background:transparent; border:none; outline:none; padding:13px 12px; color:var(--text); font-family:inherit; font-size:13.5px; text-align:right; transition:background .15s; }
+  .cell-input:focus { background:rgba(124,106,247,.12); }
+  .cell-input::placeholder { color:var(--border); }
+  td.has-value { background:rgba(200,240,74,.04); }
+  .totals-row td { background:var(--surface2)!important; font-weight:700; font-size:13px; padding:13px 12px; text-align:right; color:var(--accent); border-top:1px solid var(--border); }
+  .totals-row td:first-child { text-align:left; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
+  .summary-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-top:32px; }
+  .summary-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
+  .summary-card-label { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px; }
+  .summary-card-value { font-family:'DM Serif Display',serif; font-size:28px; color:var(--text); }
+  .summary-card-unit { font-size:12px; color:var(--muted); margin-top:2px; }
+  /* ADMIN */
+  .admin-content { max-width:960px; margin:0 auto; padding:40px 32px; }
+  .admin-title { font-family:'DM Serif Display',serif; font-size:28px; margin-bottom:6px; }
+  .admin-sub { color:var(--muted); font-size:14px; margin-bottom:40px; }
+  .admin-section { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:28px; overflow:hidden; }
+  .admin-section-header { padding:20px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .admin-section-title { font-weight:600; font-size:15px; display:flex; align-items:center; gap:10px; }
+  .admin-section-title span { background:var(--surface2); border:1px solid var(--border); border-radius:99px; padding:2px 10px; font-size:12px; color:var(--muted); font-weight:500; }
+  .btn-add { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:8px 16px; color:var(--accent); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .2s; }
+  .btn-add:hover { background:rgba(200,240,74,.1); border-color:var(--accent); }
+  .admin-list { padding:8px 0; }
+  .admin-item { display:flex; align-items:center; gap:12px; padding:10px 24px; transition:background .15s; }
+  .admin-item:hover { background:var(--surface2); }
+  .item-input { flex:1; background:transparent; border:1px solid transparent; border-radius:8px; padding:7px 12px; color:var(--text); font-family:inherit; font-size:14px; outline:none; transition:all .2s; }
+  .item-input:hover { border-color:var(--border); background:var(--bg); }
+  .item-input:focus { border-color:var(--accent2); background:var(--bg); }
+  .item-id { font-size:11px; color:var(--muted); background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:4px 8px; white-space:nowrap; }
+  .btn-delete { background:none; border:none; padding:6px; cursor:pointer; color:var(--muted); border-radius:6px; transition:all .2s; display:flex; align-items:center; }
+  .btn-delete:hover { color:var(--danger); background:rgba(240,74,106,.1); }
+  .empty-list { padding:24px; text-align:center; color:var(--muted); font-size:14px; }
+  .btn-secondary { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 20px; color:var(--text); font-family:inherit; font-size:14px; cursor:pointer; transition:all .2s; }
+  .btn-secondary:hover { border-color:var(--accent2); }
+  .btn-save-admin { background:var(--accent); color:#0f0f13; border:none; border-radius:8px; padding:10px 24px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:opacity .2s; display:flex; align-items:center; gap:8px; }
+  .btn-save-admin:hover { opacity:.88; }
+  .btn-save-admin:disabled { opacity:.5; cursor:not-allowed; }
+  .user-assign-row { display:flex; align-items:flex-start; justify-content:space-between; padding:14px 24px; border-bottom:1px solid var(--border); gap:16px; }
+  .user-assign-row:last-child { border-bottom:none; }
+  .user-assign-name { font-size:14px; font-weight:500; }
+  .user-assign-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .chips-wrap { display:flex; flex-wrap:wrap; gap:6px; max-width:540px; justify-content:flex-end; }
+  .chip { padding:4px 12px; border-radius:99px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border); color:var(--muted); background:transparent; font-family:inherit; transition:all .2s; }
+  .chip.active { background:rgba(200,240,74,.15); border-color:var(--accent); color:var(--accent); }
+  .chip:hover { border-color:var(--accent2); color:var(--text); }
+  .section-loading { padding:28px; text-align:center; color:var(--muted); font-size:14px; display:flex; align-items:center; justify-content:center; gap:10px; }
+</style>
+</head>
+<body>
+
+<div id="global-loader">
+  <div class="spinner"></div>
+  <div class="loader-text">Conectando con la base de datos…</div>
+</div>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Contratos ·</div>
+    <div class="login-subtitle">Portal de ingreso de volúmenes</div>
+    <div class="field-label">RUT / Usuario</div>
+    <input class="field-input" id="inp-user" type="text" placeholder="ej: 760035106" autocomplete="username">
+    <div class="field-label">Contraseña</div>
+    <input class="field-input" id="inp-pass" type="password" placeholder="••••••••">
+    <div class="error-msg" id="login-error"></div>
+    <button class="btn-primary" id="btn-login" onclick="doLogin()">Ingresar</button>
+    <div class="hint">Admin: usuario <strong>admin</strong> / contraseña <strong>admin123</strong></div>
+  </div>
+</div>
+
+<div id="app-screen">
+  <nav class="topbar">
+    <div class="topbar-logo">Contratos ·</div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span id="user-name-display">Usuario</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Salir</button>
+    </div>
+  </nav>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="nav-data" onclick="showSection('data')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      Ingreso de Volúmenes
+    </button>
+    <button class="nav-tab" id="nav-admin" onclick="showSection('admin')" style="display:none">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+      Administración
+    </button>
+  </div>
+
+  <!-- INGRESO VOLÚMENES -->
+  <div id="data-screen">
+    <div class="main-content">
+      <div class="page-title" id="page-title-name">Ingreso de Volúmenes</div>
+      <div class="page-sub">Completa los volúmenes mensuales por lugar de entrega y producto.</div>
+      <div class="controls-bar">
+        <div class="control-group">
+          <div class="field-label">Contrato</div>
+          <select class="control-select" id="sel-contrato" onchange="onContextChange()">
+            <option value="C-2024-001">C-2024-001</option>
+            <option value="C-2024-002">C-2024-002</option>
+            <option value="C-2025-001">C-2025-001</option>
+            <option value="C-2026-001" selected>C-2026-001</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <div class="field-label">Año</div>
+          <select class="control-select" id="sel-year" onchange="onContextChange()">
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+          </select>
+        </div>
+        <div class="save-status" id="save-status"><span id="save-status-text"></span></div>
+        <button class="btn-save" id="btn-guardar" onclick="saveData()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Guardar
+        </button>
+      </div>
+      <div class="plant-tabs" id="plant-tabs"></div>
+      <div class="table-wrapper">
+        <table><thead id="table-head"></thead><tbody id="table-body"></tbody></table>
+      </div>
+      <div class="summary-cards" id="summary-cards"></div>
+    </div>
+  </div>
+
+  <!-- ADMINISTRACIÓN -->
+  <div id="admin-screen" style="display:none">
+    <div class="admin-content">
+      <div class="admin-title">Administración</div>
+      <div class="admin-sub">Gestiona lugares de entrega, productos y asignaciones por usuario.</div>
+
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div class="admin-section-title">Lugares de Entrega <span id="plant-count">0</span></div>
+          <button class="btn-add" onclick="addAdminItem('plant')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar lugar
+          </button>
+        </div>
+        <div class="admin-list" id="plants-list"></div>
+      </div>
+
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div class="admin-section-title">Productos <span id="product-count">0</span></div>
+          <button class="btn-add" onclick="addAdminItem('product')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar producto
+          </button>
+        </div>
+        <div class="admin-list" id="products-list"></div>
+      </div>
+
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div class="admin-section-title">Lugares por usuario</div>
+        </div>
+        <div id="user-plant-assign"></div>
+      </div>
+
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div class="admin-section-title">Productos por usuario</div>
+        </div>
+        <div id="user-product-assign"></div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:8px">
+        <button class="btn-secondary" onclick="showSection('data')">Cancelar</button>
+        <button class="btn-save-admin" id="btn-save-admin" onclick="saveAdmin()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Guardar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://dawsaejcxhfufrgiewxu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhd3NhZWpjeGhmdWZyZ2lld3h1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODE5MTEsImV4cCI6MjA5MjM1NzkxMX0.PjfDpby2xtyNyC7wKy4vOK1tr2ZkKuZ6DSqCW7-8Zac';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+let currentUser   = null;
+let currentPlantIdx = 0;
+let userPlants    = [];   // [{ ID_LUGAR_ENTREGA, Lugar_Entrega }]
+let userProducts  = [];   // [{ ID_PRODUCTO, Producto }]
+let volCache      = {};   // volCache[id_producto][mes] = valor
+let draftPlants   = [], draftProducts = [];
+let draftUserPlants = {}, draftUserProducts = {};
+
+// ── INIT ──
+async function init() {
+  try {
+    await sb.from('usuarios').select('username').limit(1);
+    document.getElementById('global-loader').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  } catch(e) {
+    document.querySelector('.loader-text').textContent = 'Error de conexión. Recarga la página.';
+  }
+}
+init();
+
+// ── AUTH ──
+async function doLogin() {
+  const u   = document.getElementById('inp-user').value.trim();
+  const p   = document.getElementById('inp-pass').value;
+  const err = document.getElementById('login-error');
+  const btn = document.getElementById('btn-login');
+  err.textContent = '';
+  btn.disabled = true;
+  btn.innerHTML = '<div class="mini-spinner"></div> Ingresando…';
+
+  const { data, error } = await sb.from('usuarios').select('*')
+    .eq('username', u).eq('password', p).single();
+
+  if (error || !data) {
+    err.textContent = 'RUT o contraseña incorrectos.';
+    btn.disabled = false; btn.textContent = 'Ingresar'; return;
+  }
+
+  currentUser = data;
+  document.getElementById('user-name-display').textContent = data.nombre;
+  document.getElementById('user-avatar').textContent = data.nombre[0].toUpperCase();
+  document.getElementById('page-title-name').textContent = `Bienvenido, ${data.nombre}`;
+  if (data.es_admin) document.getElementById('nav-admin').style.display = 'flex';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display   = 'block';
+  btn.disabled = false; btn.textContent = 'Ingresar';
+
+  await loadUserConfig();
+  showSection('data');
+}
+
+document.getElementById('inp-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('inp-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('inp-pass').focus(); });
+
+function doLogout() {
+  currentUser = null; currentPlantIdx = 0;
+  userPlants = []; userProducts = []; volCache = {};
+  document.getElementById('inp-user').value = '';
+  document.getElementById('inp-pass').value = '';
+  document.getElementById('nav-admin').style.display = 'none';
+  document.getElementById('app-screen').style.display  = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+async function loadUserConfig() {
+  const u = currentUser.username;
+  const [rP, rPr] = await Promise.all([
+    sb.from('usuario_plantas').select('id_lugar, plantas(ID_LUGAR_ENTREGA, Lugar_Entrega, orden)')
+      .eq('username', u),
+    sb.from('usuario_productos').select('id_producto, productos(ID_PRODUCTO, Producto, orden)')
+      .eq('username', u),
+  ]);
+  userPlants   = (rP.data  || []).map(r => r.plantas).filter(Boolean)
+    .sort((a,b) => a.orden - b.orden);
+  userProducts = (rPr.data || []).map(r => r.productos).filter(Boolean)
+    .sort((a,b) => a.orden - b.orden);
+}
+
+// ── NAVEGACIÓN ──
+function showSection(s) {
+  document.getElementById('data-screen').style.display  = s==='data'  ? 'block' : 'none';
+  document.getElementById('admin-screen').style.display = s==='admin' ? 'block' : 'none';
+  document.getElementById('nav-data').classList.toggle('active',  s==='data');
+  document.getElementById('nav-admin').classList.toggle('active', s==='admin');
+  if (s==='data')  { currentPlantIdx=0; buildTabs(); renderTable(); }
+  if (s==='admin') openAdmin();
+}
+
+function onContextChange() { currentPlantIdx=0; volCache={}; buildTabs(); renderTable(); }
+
+// ── TABLA ──
+function buildTabs() {
+  document.getElementById('plant-tabs').innerHTML =
+    userPlants.map((p,i) =>
+      `<button class="tab-btn ${i===currentPlantIdx?'active':''}" onclick="selectPlant(${i})">${p.Lugar_Entrega}</button>`
+    ).join('');
+}
+function selectPlant(i) { currentPlantIdx=i; buildTabs(); renderTable(); }
+
+async function renderTable() {
+  const planta   = userPlants[currentPlantIdx];
+  if (!planta) return;
+  const contrato = document.getElementById('sel-contrato').value;
+  const anio     = parseInt(document.getElementById('sel-year').value);
+
+  document.getElementById('table-head').innerHTML =
+    `<tr><th>${planta.Lugar_Entrega}</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr>`;
+  document.getElementById('table-body').innerHTML =
+    `<tr><td colspan="${MONTHS.length+1}"><div class="section-loading"><div class="mini-spinner"></div> Cargando…</div></td></tr>`;
+
+  const { data } = await sb.from('volumenes').select('id_producto, mes, valor')
+    .eq('contrato', contrato).eq('anio', anio).eq('id_lugar', planta.ID_LUGAR_ENTREGA);
+
+  volCache = {};
+  (data||[]).forEach(r => {
+    if (!volCache[r.id_producto]) volCache[r.id_producto] = {};
+    volCache[r.id_producto][r.mes] = r.valor;
+  });
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  userProducts.forEach(prod => {
+    const tr = document.createElement('tr');
+    let cells = `<td>${prod.Producto}</td>`;
+    MONTHS.forEach((_,mi) => {
+      const val = volCache?.[prod.ID_PRODUCTO]?.[mi] ?? '';
+      cells += `<td${val!==''?` class="has-value"`:''}><input class="cell-input" type="number" min="0" placeholder="0" value="${val}" data-pid="${prod.ID_PRODUCTO}" data-mi="${mi}" oninput="onCell(this)"></td>`;
+    });
+    tr.innerHTML = cells; tbody.appendChild(tr);
+  });
+
+  const totals = MONTHS.map((_,mi) =>
+    userProducts.reduce((s,pr) => s+(parseFloat(volCache?.[pr.ID_PRODUCTO]?.[mi])||0), 0)
+  );
+  const trTot = document.createElement('tr');
+  trTot.className = 'totals-row';
+  trTot.innerHTML = `<td>Total mensual</td>${totals.map(t=>`<td>${t?t.toLocaleString('es-CL'):''}</td>`).join('')}`;
+  tbody.appendChild(trTot);
+  renderSummary();
+}
+
+function onCell(inp) {
+  const { pid, mi } = inp.dataset;
+  const val = inp.value !== '' ? parseFloat(inp.value) : null;
+  if (!volCache[pid]) volCache[pid] = {};
+  volCache[pid][parseInt(mi)] = val;
+  inp.closest('td').classList.toggle('has-value', val !== null);
+  const totals = MONTHS.map((_,mi) =>
+    userProducts.reduce((s,pr) => s+(parseFloat(volCache?.[pr.ID_PRODUCTO]?.[mi])||0), 0)
+  );
+  document.querySelectorAll('.totals-row td').forEach((td,i) => {
+    if (i>0) td.textContent = totals[i-1] ? totals[i-1].toLocaleString('es-CL') : '';
+  });
+  renderSummary();
+}
+
+async function saveData() {
+  const btn   = document.getElementById('btn-guardar');
+  const st    = document.getElementById('save-status');
+  const stTxt = document.getElementById('save-status-text');
+  btn.disabled = true;
+  stTxt.textContent = '⏳ Guardando…'; st.className = 'save-status show';
+
+  const planta   = userPlants[currentPlantIdx];
+  const contrato = document.getElementById('sel-contrato').value;
+  const anio     = parseInt(document.getElementById('sel-year').value);
+
+  const rows = [];
+  userProducts.forEach(prod => {
+    MONTHS.forEach((_,mi) => {
+      const val = volCache?.[prod.ID_PRODUCTO]?.[mi];
+      if (val !== null && val !== undefined) {
+        rows.push({
+          contrato, anio,
+          id_lugar:    planta.ID_LUGAR_ENTREGA,
+          id_producto: prod.ID_PRODUCTO,
+          mes: mi, valor: val,
+          username:   currentUser.username,
+          updated_at: new Date().toISOString()
+        });
+      }
+    });
+  });
+
+  let ok = true;
+  if (rows.length > 0) {
+    const { error } = await sb.from('volumenes')
+      .upsert(rows, { onConflict: 'contrato,anio,id_lugar,id_producto,mes' });
+    if (error) { ok=false; console.error(error); }
+  }
+
+  stTxt.textContent = ok ? '✓ Guardado correctamente' : '✗ Error al guardar';
+  st.className = `save-status ${ok?'ok':'err'} show`;
+  btn.disabled = false;
+  setTimeout(() => { st.className = 'save-status'; }, 3000);
+}
+
+function renderSummary() {
+  const contrato = document.getElementById('sel-contrato').value;
+  const year     = document.getElementById('sel-year').value;
+  let grand = 0;
+  userProducts.forEach(pr => MONTHS.forEach((_,mi) => { grand += parseFloat(volCache?.[pr.ID_PRODUCTO]?.[mi]||0); }));
+  const filled = userProducts.filter(pr => MONTHS.some((_,mi) => volCache?.[pr.ID_PRODUCTO]?.[mi] != null)).length;
+  document.getElementById('summary-cards').innerHTML = `
+    <div class="summary-card"><div class="summary-card-label">Total lugar actual</div><div class="summary-card-value">${grand.toLocaleString('es-CL')}</div><div class="summary-card-unit">litros · ${year}</div></div>
+    <div class="summary-card"><div class="summary-card-label">Productos con datos</div><div class="summary-card-value">${filled}<span style="font-size:16px;color:var(--muted)"> / ${userProducts.length}</span></div><div class="summary-card-unit">en este lugar</div></div>
+    <div class="summary-card"><div class="summary-card-label">Lugares asignados</div><div class="summary-card-value">${userPlants.length}</div><div class="summary-card-unit">para tu contrato</div></div>
+    <div class="summary-card"><div class="summary-card-label">Contrato</div><div class="summary-card-value" style="font-size:20px">${contrato}</div><div class="summary-card-unit">período ${year}</div></div>`;
+}
+
+// ── ADMIN ──
+async function openAdmin() {
+  ['plants-list','products-list','user-plant-assign','user-product-assign'].forEach(id =>
+    document.getElementById(id).innerHTML = '<div class="section-loading"><div class="mini-spinner"></div> Cargando…</div>'
+  );
+  const [rPl, rPr, rUs, rUPl, rUPr] = await Promise.all([
+    sb.from('plantas').select('*').order('orden'),
+    sb.from('productos').select('*').order('orden'),
+    sb.from('usuarios').select('username,nombre').eq('es_admin', false).order('nombre'),
+    sb.from('usuario_plantas').select('username,id_lugar'),
+    sb.from('usuario_productos').select('username,id_producto'),
+  ]);
+
+  draftPlants   = (rPl.data||[]).map(r=>({...r}));
+  draftProducts = (rPr.data||[]).map(r=>({...r}));
+  const users   = rUs.data||[];
+
+  draftUserPlants = {};
+  (rUPl.data||[]).forEach(r => { if(!draftUserPlants[r.username]) draftUserPlants[r.username]=[]; draftUserPlants[r.username].push(r.id_lugar); });
+  draftUserProducts = {};
+  (rUPr.data||[]).forEach(r => { if(!draftUserProducts[r.username]) draftUserProducts[r.username]=[]; draftUserProducts[r.username].push(r.id_producto); });
+
+  renderAdminList('plant');
+  renderAdminList('product');
+  renderAssign('plant', users);
+  renderAssign('product', users);
+}
+
+function renderAdminList(type) {
+  const isPlant  = type==='plant';
+  const items    = isPlant ? draftPlants : draftProducts;
+  const listId   = isPlant ? 'plants-list' : 'products-list';
+  const countId  = isPlant ? 'plant-count' : 'product-count';
+  const idField  = isPlant ? 'ID_LUGAR_ENTREGA' : 'ID_PRODUCTO';
+  const nameField = isPlant ? 'Lugar_Entrega' : 'Producto';
+  document.getElementById(countId).textContent = items.length;
+  const list = document.getElementById(listId);
+  if (!items.length) { list.innerHTML = '<div class="empty-list">Sin elementos.</div>'; return; }
+  list.innerHTML = items.map((item,i) => `
+    <div class="admin-item">
+      <span class="item-id">${item[idField]||'nuevo'}</span>
+      <input class="item-input" value="${item[nameField]}" placeholder="Nombre"
+        oninput="${isPlant?'draftPlants':'draftProducts'}[${i}]['${nameField}']=this.value">
+      <button class="btn-delete" onclick="removeAdminItem('${type}',${i})">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+    </div>`).join('');
+}
+
+function addAdminItem(type) {
+  const isPlant = type==='plant';
+  if (isPlant) draftPlants.push({ ID_LUGAR_ENTREGA: null, Lugar_Entrega: 'Nuevo Lugar', orden: 999 });
+  else         draftProducts.push({ ID_PRODUCTO: null, Producto: 'Nuevo Producto', orden: 999 });
+  renderAdminList(type);
+  const inputs = document.getElementById(isPlant?'plants-list':'products-list').querySelectorAll('.item-input');
+  const last = inputs[inputs.length-1]; if(last){ last.focus(); last.select(); }
+}
+
+function removeAdminItem(type, i) {
+  if (type==='plant') draftPlants.splice(i,1); else draftProducts.splice(i,1);
+  renderAdminList(type);
+}
+
+function renderAssign(type, users) {
+  const isPlant   = type==='plant';
+  const items     = isPlant ? draftPlants : draftProducts;
+  const assignMap = isPlant ? draftUserPlants : draftUserProducts;
+  const idField   = isPlant ? 'ID_LUGAR_ENTREGA' : 'ID_PRODUCTO';
+  const nameField = isPlant ? 'Lugar_Entrega' : 'Producto';
+  const container = document.getElementById(isPlant ? 'user-plant-assign' : 'user-product-assign');
+  container.innerHTML = users.map(u => {
+    const assigned = assignMap[u.username] || [];
+    const chips = items.filter(i => i[idField]).map(item =>
+      `<button class="chip ${assigned.includes(item[idField])?'active':''}"
+        onclick="toggleAssign('${type}','${u.username}','${item[idField]}',this)">${item[nameField]}</button>`
+    ).join('');
+    return `<div class="user-assign-row">
+      <div style="min-width:200px">
+        <div class="user-assign-name">${u.nombre}</div>
+        <div class="user-assign-sub" id="sub-${type}-${u.username}">${u.username} · ${assigned.length} asignado(s)</div>
+      </div>
+      <div class="chips-wrap">${chips||'<span style="color:var(--muted);font-size:12px">Sin elementos</span>'}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleAssign(type, username, id, btn) {
+  const map = type==='plant' ? draftUserPlants : draftUserProducts;
+  if (!map[username]) map[username]=[];
+  const arr = map[username]; const idx = arr.indexOf(id);
+  if (idx>=0) { arr.splice(idx,1); btn.classList.remove('active'); }
+  else        { arr.push(id);      btn.classList.add('active'); }
+  document.getElementById(`sub-${type}-${username}`).textContent = `${username} · ${arr.length} asignado(s)`;
+}
+
+async function saveAdmin() {
+  const btn = document.getElementById('btn-save-admin');
+  btn.disabled=true; btn.innerHTML='<div class="mini-spinner"></div> Guardando…';
+
+  document.querySelectorAll('#plants-list .item-input').forEach((inp,i) => { if(draftPlants[i]) draftPlants[i].Lugar_Entrega=inp.value.trim(); });
+  document.querySelectorAll('#products-list .item-input').forEach((inp,i) => { if(draftProducts[i]) draftProducts[i].Producto=inp.value.trim(); });
+
+  try {
+    for (const [i,p] of draftPlants.entries()) {
+      if (p.ID_LUGAR_ENTREGA) await sb.from('plantas').update({ Lugar_Entrega: p.Lugar_Entrega, orden:i }).eq('ID_LUGAR_ENTREGA', p.ID_LUGAR_ENTREGA);
+    }
+    for (const [i,p] of draftProducts.entries()) {
+      if (p.ID_PRODUCTO) await sb.from('productos').update({ Producto: p.Producto, orden:i }).eq('ID_PRODUCTO', p.ID_PRODUCTO);
+    }
+    for (const u of Object.keys(draftUserPlants)) {
+      await sb.from('usuario_plantas').delete().eq('username', u);
+      const rows = (draftUserPlants[u]||[]).map(id => ({ username:u, id_lugar:id }));
+      if (rows.length) await sb.from('usuario_plantas').insert(rows);
+    }
+    for (const u of Object.keys(draftUserProducts)) {
+      await sb.from('usuario_productos').delete().eq('username', u);
+      const rows = (draftUserProducts[u]||[]).map(id => ({ username:u, id_producto:id }));
+      if (rows.length) await sb.from('usuario_productos').insert(rows);
+    }
+    await loadUserConfig();
+    btn.innerHTML='✓ Guardado';
+    setTimeout(() => {
+      btn.disabled=false;
+      btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar cambios';
+      showSection('data');
+    }, 1200);
+  } catch(e) {
+    console.error(e);
+    btn.disabled=false; btn.textContent='✗ Error — reintentar';
+  }
+}
+</script>
+</body>
+</html>
