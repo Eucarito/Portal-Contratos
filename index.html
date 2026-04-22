@@ -744,7 +744,33 @@ async function saveData() {
     const { error } = await sb.from('volumenes').upsert(rows, { onConflict: 'username,contrato,anio,id_lugar,id_producto,mes' });
     if (error) { ok=false; console.error(error); }
   }
-  stTxt.textContent = ok ? '✓ Guardado correctamente' : '✗ Error al guardar';
+
+  // Si guardó correctamente, enviar correo
+  if (ok && rows.length > 0) {
+    stTxt.textContent = 'Enviando correo…';
+    try {
+      const registrosEmail = rows.map(r => {
+        const prod = userProducts.find(p => p.ID_PRODUCTO === r.id_producto);
+        return { producto: prod?.Producto || r.id_producto, mes: r.mes, valor: r.valor };
+      });
+      await fetch(`${SUPABASE_URL}/functions/v1/enviar-correo-volumenes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+        },
+        body: JSON.stringify({
+          username: currentUser.username,
+          nombre_cliente: currentUser.nombre,
+          contrato, anio,
+          lugar: planta.Lugar_Entrega,
+          registros: registrosEmail,
+        }),
+      });
+    } catch(e) { console.warn('No se pudo enviar correo:', e); }
+  }
+
+  stTxt.textContent = ok ? '✓ Guardado y correo enviado' : '✗ Error al guardar';
   st.className = `save-status ${ok?'ok':'err'} show`;
   btn.disabled = false;
   setTimeout(() => { st.className = 'save-status'; }, 3000);
