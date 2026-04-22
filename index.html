@@ -753,7 +753,7 @@ async function saveData() {
         const prod = userProducts.find(p => p.ID_PRODUCTO === r.id_producto);
         return { producto: prod?.Producto || r.id_producto, mes: r.mes, valor: r.valor };
       });
-      await fetch(`${SUPABASE_URL}/functions/v1/enviar-correo-volumenes`, {
+      await fetch(`${SUPABASE_URL}/functions/v1/super-responder`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
