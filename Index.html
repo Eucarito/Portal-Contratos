@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de Contratos</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:        #f7f6f2;
+    --surface:   #ffffff;
+    --surface2:  #f0eee8;
+    --border:    #e3e0d8;
+    --border-strong: #c9c5b8;
+    --navy:      #0f2540;
+    --navy-soft: #1a3558;
+    --accent:    #c89b3c;
+    --accent-soft: #f5ecd9;
+    --text:      #1a1f2e;
+    --text-2:    #4a5366;
+    --muted:     #8a8f9c;
+    --success:   #2e7d5b;
+    --danger:    #b23a48;
+    --radius:    8px;
+    --shadow-sm: 0 1px 2px rgba(15,37,64,.04);
+    --shadow-md: 0 4px 16px rgba(15,37,64,.06);
+    --shadow-lg: 0 20px 40px rgba(15,37,64,.08);
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ─── LOADER ─── */
+  #global-loader { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:999; flex-direction:column; gap:16px; }
+  .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--navy); border-radius:50%; animation:spin .7s linear infinite; }
+  .mini-spinner { width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; display:inline-block; vertical-align:middle; }
+  .mini-spinner-dark { width:14px; height:14px; border:2px solid var(--border); border-top-color:var(--navy); border-radius:50%; animation:spin .7s linear infinite; display:inline-block; vertical-align:middle; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loader-text { color:var(--muted); font-size:14px; }
+
+  /* ─── LOGIN ─── */
+  #login-screen { min-height:100vh; display:none; align-items:center; justify-content:center; padding:32px; background: linear-gradient(180deg, #fafaf7 0%, #f0eee8 100%); }
+  .login-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:56px 48px; width:460px; box-shadow: var(--shadow-lg); }
+  .login-badge { display:inline-flex; align-items:center; gap:6px; background:var(--accent-soft); color:var(--accent); font-size:11px; font-weight:600; padding:4px 10px; border-radius:99px; letter-spacing:.06em; text-transform:uppercase; margin-bottom:16px; }
+  .login-title { font-family:'Instrument Serif', serif; font-size:40px; color:var(--navy); line-height:1; margin-bottom:6px; letter-spacing:-.02em; }
+  .login-subtitle { color:var(--text-2); font-size:14px; margin-bottom:40px; }
+  .field-label { font-size:12px; font-weight:600; color:var(--text-2); letter-spacing:.02em; margin-bottom:6px; }
+  .field-input { width:100%; background:var(--bg); border:1px solid var(--border-strong); border-radius:var(--radius); padding:12px 14px; color:var(--text); font-family:inherit; font-size:15px; outline:none; transition:all .15s; margin-bottom:18px; }
+  .field-input:focus { border-color:var(--navy); background:var(--surface); box-shadow:0 0 0 3px rgba(15,37,64,.08); }
+  .btn-primary { width:100%; background:var(--navy); color:#fff; border:none; border-radius:var(--radius); padding:14px; font-family:inherit; font-size:15px; font-weight:600; cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .btn-primary:hover { background:var(--navy-soft); transform:translateY(-1px); box-shadow:var(--shadow-md); }
+  .btn-primary:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+  .error-msg { color:var(--danger); font-size:13px; margin-top:-10px; margin-bottom:14px; min-height:18px; }
+  .hint { font-size:12px; color:var(--text-2); margin-top:14px; padding:10px 14px; background:var(--surface2); border-radius:var(--radius); border:1px solid var(--border); }
+
+  /* ─── APP ─── */
+  #app-screen { display:none; min-height:100vh; }
+  .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 40px; height:64px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .topbar-logo { font-family:'Instrument Serif', serif; font-size:24px; color:var(--navy); letter-spacing:-.01em; }
+  .topbar-logo span { color:var(--accent); }
+  .topbar-right { display:flex; align-items:center; gap:12px; }
+  .user-chip { display:flex; align-items:center; gap:10px; background:var(--surface2); border:1px solid var(--border); border-radius:99px; padding:5px 14px 5px 5px; font-size:13px; font-weight:500; color:var(--text); }
+  .user-avatar { width:28px; height:28px; background:var(--navy); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; }
+  .btn-logout { background:none; border:1px solid var(--border); border-radius:var(--radius); padding:7px 14px; color:var(--text-2); font-family:inherit; font-size:13px; cursor:pointer; transition:all .15s; }
+  .btn-logout:hover { border-color:var(--danger); color:var(--danger); }
+
+  .nav-tabs { display:flex; gap:0; padding:0 40px; background:var(--surface); border-bottom:1px solid var(--border); }
+  .nav-tab { background:none; border:none; border-bottom:2px solid transparent; padding:14px 18px; color:var(--muted); font-family:inherit; font-size:14px; font-weight:500; cursor:pointer; white-space:nowrap; transition:all .15s; margin-bottom:-1px; display:flex; align-items:center; gap:8px; }
+  .nav-tab:hover { color:var(--navy); }
+  .nav-tab.active { color:var(--navy); border-bottom-color:var(--navy); font-weight:600; }
+
+  .main-content { max-width:1400px; margin:0 auto; padding:40px; }
+  .client-main { max-width:1600px; margin:0 auto; padding:32px 40px 48px; }
+
+  /* ─── HEADER CLIENTE ─── */
+  .welcome-block { margin-bottom:24px; }
+  .welcome-title { font-family:'Instrument Serif', serif; font-size:44px; color:var(--navy); line-height:1.05; letter-spacing:-.02em; margin-bottom:4px; }
+  .welcome-sub { color:var(--text-2); font-size:15px; font-weight:400; }
+
+  /* Meta bar: contrato/año/guardar */
+  .meta-bar {
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:10px 16px; margin-bottom:18px; flex-wrap:wrap;
+  }
+  .meta-left { display:flex; align-items:center; gap:20px; flex-wrap:wrap; font-size:13px; color:var(--text-2); }
+  .meta-item { display:flex; align-items:center; gap:6px; }
+  .meta-item label { color:var(--muted); font-weight:500; font-size:12px; }
+  .meta-select { background:transparent; border:none; color:var(--text); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; outline:none; padding:4px 6px; border-radius:6px; }
+  .meta-select:hover { background:var(--surface2); }
+  .meta-save { display:flex; align-items:center; gap:12px; }
+  .save-status { font-size:12px; padding:6px 12px; border-radius:6px; opacity:0; transition:opacity .3s; }
+  .save-status.show { opacity:1; }
+  .save-status.ok  { background:rgba(46,125,91,.10); color:var(--success); border:1px solid rgba(46,125,91,.2); }
+  .save-status.err { background:rgba(178,58,72,.10); color:var(--danger);  border:1px solid rgba(178,58,72,.2); }
+
+  .btn-save {
+    background:var(--navy); color:#fff; border:none; border-radius:var(--radius);
+    padding:11px 22px; font-family:inherit; font-size:14px; font-weight:600; cursor:pointer;
+    transition:all .15s; display:flex; align-items:center; gap:8px;
+    box-shadow:var(--shadow-sm);
+  }
+  .btn-save:hover { background:var(--navy-soft); transform:translateY(-1px); box-shadow:var(--shadow-md); }
+  .btn-save:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+  /* ─── TABS LUGARES ─── */
+  .plant-tabs { display:flex; gap:2px; overflow-x:auto; border-bottom:1px solid var(--border); scrollbar-width:none; background:var(--surface); border-radius:var(--radius) var(--radius) 0 0; border:1px solid var(--border); border-bottom:none; padding:0 8px; }
+  .plant-tabs::-webkit-scrollbar { display:none; }
+  .tab-btn { background:none; border:none; border-bottom:2px solid transparent; padding:14px 18px; color:var(--muted); font-family:inherit; font-size:14px; font-weight:500; cursor:pointer; white-space:nowrap; transition:all .15s; margin-bottom:-1px; }
+  .tab-btn:hover { color:var(--navy); }
+  .tab-btn.active { color:var(--navy); border-bottom-color:var(--accent); font-weight:600; }
+
+  /* ─── TABLA GRANDE ─── */
+  .table-wrapper { background:var(--surface); border:1px solid var(--border); border-top:none; border-radius:0 0 var(--radius) var(--radius); overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  thead tr { background:var(--surface2); }
+  th {
+    padding:16px 14px; text-align:center; font-weight:600;
+    font-size:12px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--text-2); border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  th:first-child {
+    text-align:left; min-width:200px; position:sticky; left:0;
+    background:var(--surface2); z-index:10;
+    padding-left:24px; font-size:13px; color:var(--navy); letter-spacing:.02em;
+  }
+  td { border-bottom:1px solid var(--border); padding:0; }
+  td:first-child {
+    padding:18px 24px; font-weight:600; font-size:14px; color:var(--text);
+    position:sticky; left:0; background:var(--surface); z-index:5;
+    border-right:1px solid var(--border);
+  }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td:first-child { background:var(--surface2); }
+
+  .cell-input {
+    width:100%; min-width:90px; background:transparent; border:none; outline:none;
+    padding:18px 14px; color:var(--text); font-family:inherit; font-size:14px;
+    text-align:right; transition:background .15s; font-weight:500;
+  }
+  .cell-input:focus { background:var(--accent-soft); color:var(--navy); }
+  .cell-input::placeholder { color:var(--border-strong); font-weight:400; }
+  td.has-value { background:rgba(200,155,60,.04); }
+  td.has-value .cell-input { font-weight:600; color:var(--navy); }
+
+  .totals-row td {
+    background:var(--navy)!important; font-weight:700; font-size:14px;
+    padding:16px 14px; text-align:right; color:#fff;
+    border-top:2px solid var(--navy);
+  }
+  .totals-row td:first-child {
+    text-align:left; color:rgba(255,255,255,.8); font-size:12px;
+    text-transform:uppercase; letter-spacing:.06em; padding-left:24px;
+  }
+
+  /* ─── RESUMEN ─── */
+  .summary-strip {
+    display:flex; gap:20px; margin-top:20px; padding:18px 24px;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  }
+  .summary-item { flex:1; min-width:140px; border-right:1px solid var(--border); padding-right:20px; }
+  .summary-item:last-child { border-right:none; }
+  .summary-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; font-weight:500; }
+  .summary-value { font-family:'Instrument Serif', serif; font-size:26px; color:var(--navy); line-height:1; letter-spacing:-.01em; }
+  .summary-unit { font-size:12px; color:var(--muted); margin-top:4px; }
+
+  /* ─── ADMIN ─── */
+  .admin-hero { display:flex; align-items:flex-start; justify-content:space-between; gap:32px; margin-bottom:28px; flex-wrap:wrap; }
+  .admin-title { font-family:'Instrument Serif', serif; font-size:38px; color:var(--navy); line-height:1.05; letter-spacing:-.02em; margin-bottom:4px; }
+  .admin-sub { color:var(--text-2); font-size:14px; max-width:480px; }
+  .admin-nav-toggle { display:flex; gap:2px; background:var(--surface2); padding:4px; border-radius:var(--radius); border:1px solid var(--border); }
+  .admin-nav-btn { background:none; border:none; padding:9px 16px; color:var(--text-2); font-family:inherit; font-size:13px; font-weight:500; cursor:pointer; border-radius:6px; transition:all .15s; }
+  .admin-nav-btn.active { background:var(--surface); color:var(--navy); font-weight:600; box-shadow:var(--shadow-sm); }
+
+  /* ADMIN — VISTA VOLUMENES */
+  .admin-filter-bar {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px 24px; margin-bottom:24px;
+  }
+  .filter-title { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:14px; font-weight:600; }
+  .filter-row { display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start; }
+  .filter-col { flex:1; min-width:240px; }
+  .filter-col label { display:block; font-size:12px; color:var(--text-2); font-weight:600; margin-bottom:6px; }
+
+  .multi-select-btn {
+    width:100%; background:var(--bg); border:1px solid var(--border-strong); border-radius:var(--radius);
+    padding:10px 14px; text-align:left; font-family:inherit; font-size:14px; color:var(--text);
+    cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:space-between;
+  }
+  .multi-select-btn:hover { border-color:var(--navy); }
+  .multi-select-btn svg { opacity:.5; flex-shrink:0; }
+
+  .dropdown { position:relative; }
+  .dropdown-panel {
+    position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:50;
+    background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius);
+    box-shadow:var(--shadow-lg); max-height:320px; overflow-y:auto; display:none;
+  }
+  .dropdown-panel.open { display:block; }
+  .dropdown-search { padding:10px 12px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--surface); }
+  .dropdown-search input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:7px 12px; font-family:inherit; font-size:13px; outline:none; }
+  .dropdown-search input:focus { border-color:var(--navy); }
+  .dropdown-actions { display:flex; gap:4px; padding:6px 10px; border-bottom:1px solid var(--border); background:var(--surface2); }
+  .dropdown-action { background:none; border:none; color:var(--navy); font-family:inherit; font-size:12px; font-weight:600; padding:4px 8px; border-radius:4px; cursor:pointer; }
+  .dropdown-action:hover { background:rgba(15,37,64,.08); }
+  .dropdown-option {
+    display:flex; align-items:center; gap:10px; padding:9px 14px; cursor:pointer;
+    font-size:13px; color:var(--text); transition:background .1s;
+  }
+  .dropdown-option:hover { background:var(--surface2); }
+  .dropdown-option.selected { background:var(--accent-soft); color:var(--navy); font-weight:500; }
+  .dropdown-check { width:16px; height:16px; border:1.5px solid var(--border-strong); border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--surface); }
+  .dropdown-option.selected .dropdown-check { background:var(--navy); border-color:var(--navy); }
+  .dropdown-check svg { opacity:0; color:#fff; }
+  .dropdown-option.selected .dropdown-check svg { opacity:1; }
+  .empty-drop { padding:20px; text-align:center; color:var(--muted); font-size:13px; }
+
+  .filter-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .filter-chip {
+    background:var(--navy); color:#fff; font-size:12px; padding:3px 8px 3px 10px;
+    border-radius:99px; display:inline-flex; align-items:center; gap:4px;
+  }
+  .filter-chip button { background:none; border:none; color:rgba(255,255,255,.7); cursor:pointer; padding:0 2px; font-size:14px; line-height:1; }
+  .filter-chip button:hover { color:#fff; }
+
+  .aggregate-banner {
+    background:var(--accent-soft); border:1px solid rgba(200,155,60,.3); border-radius:var(--radius);
+    padding:12px 18px; margin-bottom:16px; font-size:13px; color:var(--navy);
+    display:flex; align-items:center; gap:10px;
+  }
+  .aggregate-banner strong { color:var(--navy); font-weight:600; }
+
+  /* ADMIN — OTRAS SECCIONES (mantenimiento) */
+  .admin-section { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:24px; overflow:hidden; }
+  .admin-section-header { padding:18px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--surface2); }
+  .admin-section-title { font-weight:600; font-size:15px; color:var(--navy); display:flex; align-items:center; gap:10px; }
+  .admin-section-title .count { background:var(--surface); border:1px solid var(--border); border-radius:99px; padding:2px 10px; font-size:11px; color:var(--muted); font-weight:600; }
+  .btn-add { background:var(--surface); border:1px solid var(--border-strong); border-radius:6px; padding:7px 14px; color:var(--navy); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .15s; }
+  .btn-add:hover { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .admin-list { padding:4px 0; }
+  .admin-item { display:flex; align-items:center; gap:12px; padding:10px 24px; transition:background .15s; }
+  .admin-item:hover { background:var(--surface2); }
+  .item-id { font-size:11px; color:var(--muted); background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:3px 8px; white-space:nowrap; font-family:'SF Mono', Consolas, monospace; }
+  .item-input { flex:1; background:transparent; border:1px solid transparent; border-radius:6px; padding:7px 12px; color:var(--text); font-family:inherit; font-size:14px; outline:none; transition:all .15s; }
+  .item-input:hover { border-color:var(--border-strong); background:var(--bg); }
+  .item-input:focus { border-color:var(--navy); background:var(--bg); }
+  .btn-delete { background:none; border:none; padding:6px; cursor:pointer; color:var(--muted); border-radius:4px; transition:all .15s; display:flex; align-items:center; }
+  .btn-delete:hover { color:var(--danger); background:rgba(178,58,72,.08); }
+  .empty-list { padding:24px; text-align:center; color:var(--muted); font-size:13px; }
+
+  .user-assign-row { display:flex; align-items:flex-start; justify-content:space-between; padding:14px 24px; border-bottom:1px solid var(--border); gap:16px; }
+  .user-assign-row:last-child { border-bottom:none; }
+  .user-assign-name { font-size:14px; font-weight:600; color:var(--text); }
+  .user-assign-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .chips-wrap { display:flex; flex-wrap:wrap; gap:6px; max-width:560px; justify-content:flex-end; }
+  .chip {
+    padding:5px 12px; border-radius:99px; font-size:12px; font-weight:500; cursor:pointer;
+    border:1px solid var(--border-strong); color:var(--text-2); background:var(--surface);
+    font-family:inherit; transition:all .15s;
+  }
+  .chip.active { background:var(--navy); border-color:var(--navy); color:#fff; }
+  .chip:hover:not(.active) { border-color:var(--navy); color:var(--navy); }
+
+  .admin-footer { display:flex; justify-content:flex-end; gap:10px; margin-top:12px; }
+  .btn-secondary { background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius); padding:10px 20px; color:var(--text); font-family:inherit; font-size:14px; cursor:pointer; transition:all .15s; }
+  .btn-secondary:hover { border-color:var(--navy); color:var(--navy); }
+
+  .section-loading { padding:40px; text-align:center; color:var(--muted); font-size:14px; display:flex; align-items:center; justify-content:center; gap:10px; }
+  .empty-state { padding:60px 24px; text-align:center; color:var(--muted); }
+  .empty-state-icon { width:48px; height:48px; margin:0 auto 14px; opacity:.4; }
+  .empty-state h3 { font-family:'Instrument Serif', serif; font-size:22px; color:var(--navy); margin-bottom:4px; }
+  .empty-state p { font-size:14px; }
+</style>
+</head>
+<body>
+
+<div id="global-loader">
+  <div class="spinner"></div>
+  <div class="loader-text">Conectando con la base de datos…</div>
+</div>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-badge">● Portal de Contratos</div>
+    <div class="login-title">Ingreso de <br>volúmenes</div>
+    <div class="login-subtitle">Accede con tu RUT y contraseña para cargar tus volúmenes mensuales.</div>
+    <div class="field-label">RUT / Usuario</div>
+    <input class="field-input" id="inp-user" type="text" placeholder="Ej: 760783137" autocomplete="username">
+    <div class="field-label">Contraseña</div>
+    <input class="field-input" id="inp-pass" type="password" placeholder="••••••••">
+    <div class="error-msg" id="login-error"></div>
+    <button class="btn-primary" id="btn-login" onclick="doLogin()">Ingresar</button>
+    <div class="hint">Admin: <strong>admin</strong> / <strong>admin123</strong></div>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app-screen">
+  <nav class="topbar">
+    <div class="topbar-logo">Contratos<span>.</span></div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span id="user-name-display">Usuario</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Salir</button>
+    </div>
+  </nav>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="nav-data" onclick="showSection('data')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      Volúmenes
+    </button>
+    <button class="nav-tab" id="nav-admin" onclick="showSection('admin')" style="display:none">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+      Administración
+    </button>
+  </div>
+
+  <!-- ─── VISTA CLIENTE ─── -->
+  <div id="data-screen">
+    <div class="client-main">
+      <div class="welcome-block">
+        <div class="welcome-title" id="welcome-title">Bienvenido</div>
+        <div class="welcome-sub">Actualiza tus volúmenes y luego presiona <strong style="color:var(--navy)">Guardar</strong>.</div>
+      </div>
+
+      <div class="meta-bar">
+        <div class="meta-left">
+          <div class="meta-item">
+            <label>Contrato</label>
+            <select class="meta-select" id="sel-contrato" onchange="onContextChange()">
+              <option value="C-2024-001">C-2024-001</option>
+              <option value="C-2024-002">C-2024-002</option>
+              <option value="C-2025-001">C-2025-001</option>
+              <option value="C-2026-001" selected>C-2026-001</option>
+            </select>
+          </div>
+          <div class="meta-item">
+            <label>Año</label>
+            <select class="meta-select" id="sel-year" onchange="onContextChange()">
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
+            </select>
+          </div>
+        </div>
+        <div class="meta-save">
+          <div class="save-status" id="save-status"><span id="save-status-text"></span></div>
+          <button class="btn-save" id="btn-guardar" onclick="saveData()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar
+          </button>
+        </div>
+      </div>
+
+      <div class="plant-tabs" id="plant-tabs"></div>
+      <div class="table-wrapper">
+        <table><thead id="table-head"></thead><tbody id="table-body"></tbody></table>
+      </div>
+      <div class="summary-strip" id="summary-strip"></div>
+    </div>
+  </div>
+
+  <!-- ─── VISTA ADMIN ─── -->
+  <div id="admin-screen" style="display:none">
+    <div class="main-content">
+      <div class="admin-hero">
+        <div>
+          <div class="admin-title">Panel de Administración</div>
+          <div class="admin-sub">Revisa volúmenes por cliente y gestiona lugares, productos y asignaciones.</div>
+        </div>
+        <div class="admin-nav-toggle">
+          <button class="admin-nav-btn active" id="adm-btn-volumes" onclick="showAdminTab('volumes')">Volúmenes</button>
+          <button class="admin-nav-btn" id="adm-btn-config" onclick="showAdminTab('config')">Configuración</button>
+        </div>
+      </div>
+
+      <!-- ADMIN · VOLÚMENES -->
+      <div id="adm-volumes">
+        <div class="admin-filter-bar">
+          <div class="filter-title">Filtros</div>
+          <div class="filter-row">
+            <div class="filter-col">
+              <label>Contrato / Año</label>
+              <div style="display:flex; gap:8px">
+                <select class="multi-select-btn" id="adm-contrato" style="cursor:pointer" onchange="renderAdminVolumes()">
+                  <option value="C-2024-001">C-2024-001</option>
+                  <option value="C-2024-002">C-2024-002</option>
+                  <option value="C-2025-001">C-2025-001</option>
+                  <option value="C-2026-001" selected>C-2026-001</option>
+                </select>
+                <select class="multi-select-btn" id="adm-year" style="cursor:pointer; max-width:100px" onchange="renderAdminVolumes()">
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="filter-col">
+              <label>Clientes</label>
+              <div class="dropdown">
+                <button class="multi-select-btn" onclick="toggleDropdown('dd-users')">
+                  <span id="dd-users-label">Todos los clientes</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="dropdown-panel" id="dd-users">
+                  <div class="dropdown-search"><input type="text" placeholder="Buscar cliente…" oninput="filterDropdown('dd-users', this.value)"></div>
+                  <div class="dropdown-actions">
+                    <button class="dropdown-action" onclick="selectAll('users', true)">Seleccionar todos</button>
+                    <button class="dropdown-action" onclick="selectAll('users', false)">Limpiar</button>
+                  </div>
+                  <div id="dd-users-list"></div>
+                </div>
+              </div>
+              <div class="filter-chips" id="chips-users"></div>
+            </div>
+
+            <div class="filter-col">
+              <label>Lugares</label>
+              <div class="dropdown">
+                <button class="multi-select-btn" onclick="toggleDropdown('dd-plants')">
+                  <span id="dd-plants-label">Todos los lugares</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="dropdown-panel" id="dd-plants">
+                  <div class="dropdown-actions">
+                    <button class="dropdown-action" onclick="selectAll('plants', true)">Seleccionar todos</button>
+                    <button class="dropdown-action" onclick="selectAll('plants', false)">Limpiar</button>
+                  </div>
+                  <div id="dd-plants-list"></div>
+                </div>
+              </div>
+              <div class="filter-chips" id="chips-plants"></div>
+            </div>
+
+            <div class="filter-col">
+              <label>Productos</label>
+              <div class="dropdown">
+                <button class="multi-select-btn" onclick="toggleDropdown('dd-products')">
+                  <span id="dd-products-label">Todos los productos</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="dropdown-panel" id="dd-products">
+                  <div class="dropdown-actions">
+                    <button class="dropdown-action" onclick="selectAll('products', true)">Seleccionar todos</button>
+                    <button class="dropdown-action" onclick="selectAll('products', false)">Limpiar</button>
+                  </div>
+                  <div id="dd-products-list"></div>
+                </div>
+              </div>
+              <div class="filter-chips" id="chips-products"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modo: edición por cliente único O agregado -->
+        <div id="aggregate-banner" class="aggregate-banner" style="display:none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="aggregate-banner-text"></span>
+        </div>
+
+        <div class="meta-bar" id="adm-edit-bar" style="display:none">
+          <div class="meta-left">
+            <div class="meta-item">
+              <span style="color:var(--muted); font-size:12px">Editando para</span>
+              <strong id="adm-editing-name" style="color:var(--navy)">—</strong>
+            </div>
+          </div>
+          <div class="meta-save">
+            <div class="save-status" id="adm-save-status"><span id="adm-save-status-text"></span></div>
+            <button class="btn-save" id="adm-btn-save" onclick="saveAdminData()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Guardar cambios
+            </button>
+          </div>
+        </div>
+
+        <div id="admin-volumes-view"></div>
+      </div>
+
+      <!-- ADMIN · CONFIGURACIÓN -->
+      <div id="adm-config" style="display:none">
+        <div class="admin-section">
+          <div class="admin-section-header">
+            <div class="admin-section-title">Lugares de Entrega <span class="count" id="plant-count">0</span></div>
+            <button class="btn-add" onclick="addAdminItem('plant')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Agregar lugar
+            </button>
+          </div>
+          <div class="admin-list" id="plants-list"></div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-header">
+            <div class="admin-section-title">Productos <span class="count" id="product-count">0</span></div>
+            <button class="btn-add" onclick="addAdminItem('product')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Agregar producto
+            </button>
+          </div>
+          <div class="admin-list" id="products-list"></div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-header"><div class="admin-section-title">Lugares por cliente</div></div>
+          <div id="user-plant-assign"></div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-header"><div class="admin-section-title">Productos por cliente</div></div>
+          <div id="user-product-assign"></div>
+        </div>
+
+        <div class="admin-footer">
+          <button class="btn-secondary" onclick="showAdminTab('volumes')">Cancelar</button>
+          <button class="btn-save" id="btn-save-admin" onclick="saveAdminConfig()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar cambios
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://dawsaejcxhfufrgiewxu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhd3NhZWpjeGhmdWZyZ2lld3h1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODE5MTEsImV4cCI6MjA5MjM1NzkxMX0.PjfDpby2xtyNyC7wKy4vOK1tr2ZkKuZ6DSqCW7-8Zac';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// ═══════ STATE GLOBAL ═══════
+let currentUser      = null;
+let currentPlantIdx  = 0;
+let userPlants       = [];
+let userProducts     = [];
+let volCache         = {};
+
+// admin config
+let draftPlants = [], draftProducts = [];
+let draftUserPlants = {}, draftUserProducts = {};
+// admin volumes
+let allUsers = [], allPlants = [], allProducts = [];
+let selUsers = [], selPlants = [], selProducts = [];
+let admVolCache = {};         // admVolCache[plantaId][productoId][mes] = valor (cuando es 1 cliente)
+let adminCurrentPlantIdx = 0;
+
+// ═══════ INIT ═══════
+async function init() {
+  try {
+    await sb.from('usuarios').select('username').limit(1);
+    document.getElementById('global-loader').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  } catch(e) {
+    document.querySelector('.loader-text').textContent = 'Error de conexión. Recarga la página.';
+  }
+}
+init();
+
+// close dropdowns on outside click
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.dropdown')) {
+    document.querySelectorAll('.dropdown-panel').forEach(p => p.classList.remove('open'));
+  }
+});
+
+// ═══════ AUTH ═══════
+async function doLogin() {
+  const u   = document.getElementById('inp-user').value.trim();
+  const p   = document.getElementById('inp-pass').value;
+  const err = document.getElementById('login-error');
+  const btn = document.getElementById('btn-login');
+  err.textContent = '';
+  btn.disabled = true;
+  btn.innerHTML = '<div class="mini-spinner"></div> Ingresando…';
+
+  const { data, error } = await sb.from('usuarios').select('*')
+    .eq('username', u).eq('password', p).single();
+
+  if (error || !data) {
+    err.textContent = 'RUT o contraseña incorrectos.';
+    btn.disabled = false; btn.textContent = 'Ingresar'; return;
+  }
+
+  currentUser = data;
+  document.getElementById('user-name-display').textContent = data.nombre;
+  document.getElementById('user-avatar').textContent = data.nombre[0].toUpperCase();
+  document.getElementById('welcome-title').textContent = `Bienvenido, ${data.nombre}`;
+  if (data.es_admin) document.getElementById('nav-admin').style.display = 'flex';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display   = 'block';
+  btn.disabled = false; btn.textContent = 'Ingresar';
+
+  if (data.es_admin) {
+    await loadAdminMasterData();
+    showSection('admin');
+  } else {
+    await loadUserConfig();
+    showSection('data');
+  }
+}
+document.getElementById('inp-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('inp-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('inp-pass').focus(); });
+
+function doLogout() {
+  currentUser = null; currentPlantIdx = 0;
+  userPlants = []; userProducts = []; volCache = {};
+  document.getElementById('inp-user').value = '';
+  document.getElementById('inp-pass').value = '';
+  document.getElementById('nav-admin').style.display = 'none';
+  document.getElementById('app-screen').style.display  = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+async function loadUserConfig() {
+  const u = currentUser.username;
+  const [rP, rPr] = await Promise.all([
+    sb.from('usuario_plantas').select('id_lugar, plantas(ID_LUGAR_ENTREGA, Lugar_Entrega, orden)').eq('username', u),
+    sb.from('usuario_productos').select('id_producto, productos(ID_PRODUCTO, Producto, orden)').eq('username', u),
+  ]);
+  userPlants   = (rP.data  || []).map(r => r.plantas).filter(Boolean).sort((a,b) => a.orden - b.orden);
+  userProducts = (rPr.data || []).map(r => r.productos).filter(Boolean).sort((a,b) => a.orden - b.orden);
+}
+
+// ═══════ NAV ═══════
+function showSection(s) {
+  document.getElementById('data-screen').style.display  = s==='data'  ? 'block' : 'none';
+  document.getElementById('admin-screen').style.display = s==='admin' ? 'block' : 'none';
+  document.getElementById('nav-data').classList.toggle('active',  s==='data');
+  document.getElementById('nav-admin').classList.toggle('active', s==='admin');
+  if (s==='data')  { currentPlantIdx=0; buildTabs(); renderTable(); }
+  if (s==='admin') { initAdminVolumes(); }
+}
+function onContextChange() { currentPlantIdx=0; volCache={}; buildTabs(); renderTable(); }
+
+// ═══════ CLIENTE ─ TABLA ═══════
+function buildTabs() {
+  document.getElementById('plant-tabs').innerHTML =
+    userPlants.map((p,i) =>
+      `<button class="tab-btn ${i===currentPlantIdx?'active':''}" onclick="selectPlant(${i})">${p.Lugar_Entrega}</button>`
+    ).join('');
+}
+function selectPlant(i) { currentPlantIdx=i; buildTabs(); renderTable(); }
+
+async function renderTable() {
+  if (!userPlants.length) {
+    document.getElementById('plant-tabs').innerHTML = '';
+    document.getElementById('table-head').innerHTML = '';
+    document.getElementById('table-body').innerHTML = `
+      <tr><td style="padding:60px; text-align:center; color:var(--muted)">
+        No tienes lugares de entrega asignados. Contacta al administrador.
+      </td></tr>`;
+    document.getElementById('summary-strip').innerHTML = '';
+    return;
+  }
+  const planta   = userPlants[currentPlantIdx];
+  const contrato = document.getElementById('sel-contrato').value;
+  const anio     = parseInt(document.getElementById('sel-year').value);
+
+  document.getElementById('table-head').innerHTML =
+    `<tr><th>${planta.Lugar_Entrega}</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr>`;
+  document.getElementById('table-body').innerHTML =
+    `<tr><td colspan="${MONTHS.length+1}"><div class="section-loading"><div class="mini-spinner-dark"></div> Cargando…</div></td></tr>`;
+
+  const { data } = await sb.from('volumenes').select('id_producto, mes, valor')
+    .eq('username', currentUser.username)
+    .eq('contrato', contrato).eq('anio', anio).eq('id_lugar', planta.ID_LUGAR_ENTREGA);
+
+  volCache = {};
+  (data||[]).forEach(r => {
+    if (!volCache[r.id_producto]) volCache[r.id_producto] = {};
+    volCache[r.id_producto][r.mes] = r.valor;
+  });
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  userProducts.forEach(prod => {
+    const tr = document.createElement('tr');
+    let cells = `<td>${prod.Producto}</td>`;
+    MONTHS.forEach((_,mi) => {
+      const val = volCache?.[prod.ID_PRODUCTO]?.[mi] ?? '';
+      cells += `<td${val!==''?` class="has-value"`:''}><input class="cell-input" type="number" min="0" placeholder="0" value="${val}" data-pid="${prod.ID_PRODUCTO}" data-mi="${mi}" oninput="onCell(this)"></td>`;
+    });
+    tr.innerHTML = cells; tbody.appendChild(tr);
+  });
+  const totals = MONTHS.map((_,mi) =>
+    userProducts.reduce((s,pr) => s+(parseFloat(volCache?.[pr.ID_PRODUCTO]?.[mi])||0), 0)
+  );
+  const trTot = document.createElement('tr');
+  trTot.className = 'totals-row';
+  trTot.innerHTML = `<td>Total mensual</td>${totals.map(t=>`<td>${t?t.toLocaleString('es-CL'):'—'}</td>`).join('')}`;
+  tbody.appendChild(trTot);
+  renderSummary();
+}
+
+function onCell(inp) {
+  const { pid, mi } = inp.dataset;
+  const val = inp.value !== '' ? parseFloat(inp.value) : null;
+  if (!volCache[pid]) volCache[pid] = {};
+  volCache[pid][parseInt(mi)] = val;
+  inp.closest('td').classList.toggle('has-value', val !== null);
+  const totals = MONTHS.map((_,mi) =>
+    userProducts.reduce((s,pr) => s+(parseFloat(volCache?.[pr.ID_PRODUCTO]?.[mi])||0), 0)
+  );
+  document.querySelectorAll('.totals-row td').forEach((td,i) => {
+    if (i>0) td.textContent = totals[i-1] ? totals[i-1].toLocaleString('es-CL') : '—';
+  });
+  renderSummary();
+}
+
+async function saveData() {
+  const btn = document.getElementById('btn-guardar');
+  const st  = document.getElementById('save-status');
+  const stTxt = document.getElementById('save-status-text');
+  btn.disabled = true;
+  stTxt.textContent = 'Guardando…'; st.className = 'save-status show';
+
+  const planta   = userPlants[currentPlantIdx];
+  const contrato = document.getElementById('sel-contrato').value;
+  const anio     = parseInt(document.getElementById('sel-year').value);
+  const rows = [];
+  userProducts.forEach(prod => {
+    MONTHS.forEach((_,mi) => {
+      const val = volCache?.[prod.ID_PRODUCTO]?.[mi];
+      if (val !== null && val !== undefined) {
+        rows.push({
+          contrato, anio,
+          id_lugar:    planta.ID_LUGAR_ENTREGA,
+          id_producto: prod.ID_PRODUCTO,
+          mes: mi, valor: val,
+          username:   currentUser.username,
+          updated_at: new Date().toISOString()
+        });
+      }
+    });
+  });
+  let ok = true;
+  if (rows.length > 0) {
+    const { error } = await sb.from('volumenes').upsert(rows, { onConflict: 'username,contrato,anio,id_lugar,id_producto,mes' });
+    if (error) { ok=false; console.error(error); }
+  }
+
+  // Si guardó correctamente, enviar correo
+  if (ok && rows.length > 0) {
+    stTxt.textContent = 'Enviando correo…';
+    try {
+      const registrosEmail = rows.map(r => {
+        const prod = userProducts.find(p => p.ID_PRODUCTO === r.id_producto);
+        return { producto: prod?.Producto || r.id_producto, mes: r.mes, valor: r.valor };
+      });
+      await fetch(`${SUPABASE_URL}/functions/v1/enviar-correo-volumenes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+        },
+        body: JSON.stringify({
+          username: currentUser.username,
+          nombre_cliente: currentUser.nombre,
+          contrato, anio,
+          lugar: planta.Lugar_Entrega,
+          registros: registrosEmail,
+        }),
+      });
+    } catch(e) { console.warn('No se pudo enviar correo:', e); }
+  }
+
+  stTxt.textContent = ok ? '✓ Guardado y correo enviado' : '✗ Error al guardar';
+  st.className = `save-status ${ok?'ok':'err'} show`;
+  btn.disabled = false;
+  setTimeout(() => { st.className = 'save-status'; }, 3000);
+}
+
+function renderSummary() {
+  const year = document.getElementById('sel-year').value;
+  let grand = 0;
+  userProducts.forEach(pr => MONTHS.forEach((_,mi) => { grand += parseFloat(volCache?.[pr.ID_PRODUCTO]?.[mi]||0); }));
+  const filled = userProducts.filter(pr => MONTHS.some((_,mi) => volCache?.[pr.ID_PRODUCTO]?.[mi] != null)).length;
+  document.getElementById('summary-strip').innerHTML = `
+    <div class="summary-item"><div class="summary-label">Total lugar actual</div><div class="summary-value">${grand.toLocaleString('es-CL')}</div><div class="summary-unit">unidades · ${year}</div></div>
+    <div class="summary-item"><div class="summary-label">Productos con datos</div><div class="summary-value">${filled}<span style="font-size:16px; color:var(--muted)"> / ${userProducts.length}</span></div><div class="summary-unit">en este lugar</div></div>
+    <div class="summary-item"><div class="summary-label">Lugares asignados</div><div class="summary-value">${userPlants.length}</div><div class="summary-unit">en tu contrato</div></div>
+    <div class="summary-item"><div class="summary-label">Año</div><div class="summary-value">${year}</div><div class="summary-unit">período actual</div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//   ADMIN
+// ═══════════════════════════════════════════════════════
+
+function showAdminTab(tab) {
+  document.getElementById('adm-volumes').style.display = tab==='volumes'?'block':'none';
+  document.getElementById('adm-config').style.display  = tab==='config' ?'block':'none';
+  document.getElementById('adm-btn-volumes').classList.toggle('active', tab==='volumes');
+  document.getElementById('adm-btn-config').classList.toggle('active',  tab==='config');
+  if (tab==='volumes') initAdminVolumes();
+  if (tab==='config')  openAdminConfig();
+}
+
+async function loadAdminMasterData() {
+  const [rU, rP, rPr] = await Promise.all([
+    sb.from('usuarios').select('username,nombre').eq('es_admin', false).order('nombre'),
+    sb.from('plantas').select('*').order('orden'),
+    sb.from('productos').select('*').order('orden'),
+  ]);
+  allUsers    = rU.data  || [];
+  allPlants   = rP.data  || [];
+  allProducts = rPr.data || [];
+}
+
+// ─── ADMIN · VOLÚMENES ───
+async function initAdminVolumes() {
+  if (!allUsers.length) await loadAdminMasterData();
+  // reset filters: all selected by default
+  if (!selUsers.length)    selUsers    = allUsers.map(u => u.username);
+  if (!selPlants.length)   selPlants   = allPlants.map(p => p.ID_LUGAR_ENTREGA);
+  if (!selProducts.length) selProducts = allProducts.map(p => p.ID_PRODUCTO);
+
+  renderDropdown('dd-users-list',    allUsers,    'username', 'nombre', selUsers,    'users');
+  renderDropdown('dd-plants-list',   allPlants,   'ID_LUGAR_ENTREGA', 'Lugar_Entrega', selPlants, 'plants');
+  renderDropdown('dd-products-list', allProducts, 'ID_PRODUCTO', 'Producto', selProducts, 'products');
+  updateFilterChips();
+  renderAdminVolumes();
+}
+
+function renderDropdown(listId, items, idKey, nameKey, selected, filterType) {
+  const list = document.getElementById(listId);
+  if (!items.length) { list.innerHTML = '<div class="empty-drop">Sin elementos</div>'; return; }
+  list.innerHTML = items.map(item => {
+    const isSel = selected.includes(item[idKey]);
+    return `<div class="dropdown-option ${isSel?'selected':''}" data-name="${(item[nameKey]||'').toLowerCase()}" onclick="toggleFilter('${filterType}','${item[idKey]}')">
+      <div class="dropdown-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span>${item[nameKey]}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleDropdown(id) {
+  const open = document.getElementById(id).classList.contains('open');
+  document.querySelectorAll('.dropdown-panel').forEach(p => p.classList.remove('open'));
+  if (!open) document.getElementById(id).classList.add('open');
+}
+
+function filterDropdown(panelId, text) {
+  const t = text.toLowerCase();
+  document.querySelectorAll(`#${panelId} .dropdown-option`).forEach(opt => {
+    opt.style.display = opt.dataset.name.includes(t) ? 'flex' : 'none';
+  });
+}
+
+function toggleFilter(type, id) {
+  const map = { users: selUsers, plants: selPlants, products: selProducts };
+  const arr = map[type];
+  const idx = arr.indexOf(id);
+  if (idx >= 0) arr.splice(idx, 1); else arr.push(id);
+  // re-render only the affected dropdown items
+  if (type==='users')    renderDropdown('dd-users-list',    allUsers,    'username', 'nombre', selUsers,    'users');
+  if (type==='plants')   renderDropdown('dd-plants-list',   allPlants,   'ID_LUGAR_ENTREGA', 'Lugar_Entrega', selPlants, 'plants');
+  if (type==='products') renderDropdown('dd-products-list', allProducts, 'ID_PRODUCTO', 'Producto', selProducts, 'products');
+  updateFilterChips();
+  renderAdminVolumes();
+}
+
+function selectAll(type, all) {
+  if (type==='users')    selUsers    = all ? allUsers.map(u => u.username)    : [];
+  if (type==='plants')   selPlants   = all ? allPlants.map(p => p.ID_LUGAR_ENTREGA) : [];
+  if (type==='products') selProducts = all ? allProducts.map(p => p.ID_PRODUCTO) : [];
+  initAdminVolumes();
+}
+
+function updateFilterChips() {
+  // labels
+  document.getElementById('dd-users-label').textContent =
+    selUsers.length === 0 ? 'Ningún cliente' :
+    selUsers.length === allUsers.length ? 'Todos los clientes' :
+    `${selUsers.length} cliente(s)`;
+  document.getElementById('dd-plants-label').textContent =
+    selPlants.length === 0 ? 'Ningún lugar' :
+    selPlants.length === allPlants.length ? 'Todos los lugares' :
+    `${selPlants.length} lugar(es)`;
+  document.getElementById('dd-products-label').textContent =
+    selProducts.length === 0 ? 'Ningún producto' :
+    selProducts.length === allProducts.length ? 'Todos los productos' :
+    `${selProducts.length} producto(s)`;
+  // chips (solo si no es "todos")
+  document.getElementById('chips-users').innerHTML = (selUsers.length < allUsers.length && selUsers.length <= 5)
+    ? selUsers.map(u => {
+        const user = allUsers.find(x => x.username===u);
+        return user ? `<span class="filter-chip">${user.nombre}<button onclick="toggleFilter('users','${u}')">×</button></span>` : '';
+      }).join('')
+    : '';
+  document.getElementById('chips-plants').innerHTML = (selPlants.length < allPlants.length && selPlants.length <= 5)
+    ? selPlants.map(id => {
+        const p = allPlants.find(x => x.ID_LUGAR_ENTREGA===id);
+        return p ? `<span class="filter-chip">${p.Lugar_Entrega}<button onclick="toggleFilter('plants','${id}')">×</button></span>` : '';
+      }).join('')
+    : '';
+  document.getElementById('chips-products').innerHTML = (selProducts.length < allProducts.length && selProducts.length <= 5)
+    ? selProducts.map(id => {
+        const p = allProducts.find(x => x.ID_PRODUCTO===id);
+        return p ? `<span class="filter-chip">${p.Producto}<button onclick="toggleFilter('products','${id}')">×</button></span>` : '';
+      }).join('')
+    : '';
+}
+
+// ─── ADMIN · RENDERIZADO TABLA ───
+async function renderAdminVolumes() {
+  const view = document.getElementById('admin-volumes-view');
+  const banner = document.getElementById('aggregate-banner');
+  const editBar = document.getElementById('adm-edit-bar');
+
+  if (!selUsers.length || !selPlants.length || !selProducts.length) {
+    view.innerHTML = `<div class="empty-state">
+      <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <h3>Ajusta los filtros</h3>
+      <p>Selecciona al menos un cliente, lugar y producto para ver los volúmenes.</p>
+    </div>`;
+    banner.style.display = 'none';
+    editBar.style.display = 'none';
+    return;
+  }
+
+  const contrato = document.getElementById('adm-contrato').value;
+  const anio     = parseInt(document.getElementById('adm-year').value);
+
+  // Un solo cliente → modo edición (tabla tabs como cliente)
+  const isSingle = selUsers.length === 1;
+  const selPlantsObj   = allPlants.filter(p => selPlants.includes(p.ID_LUGAR_ENTREGA));
+  const selProductsObj = allProducts.filter(p => selProducts.includes(p.ID_PRODUCTO));
+
+  view.innerHTML = `<div class="section-loading"><div class="mini-spinner-dark"></div> Cargando volúmenes…</div>`;
+  banner.style.display = 'none';
+  editBar.style.display = 'none';
+
+  // Query volumenes
+  let query = sb.from('volumenes').select('username, id_lugar, id_producto, mes, valor')
+    .eq('contrato', contrato).eq('anio', anio)
+    .in('username', selUsers)
+    .in('id_lugar', selPlants)
+    .in('id_producto', selProducts);
+  const { data } = await query;
+
+  admVolCache = {};
+
+  if (isSingle) {
+    // Modo edición: organiza por id_lugar → id_producto → mes
+    const username = selUsers[0];
+    const user = allUsers.find(u => u.username === username);
+    (data||[]).forEach(r => {
+      if (!admVolCache[r.id_lugar]) admVolCache[r.id_lugar] = {};
+      if (!admVolCache[r.id_lugar][r.id_producto]) admVolCache[r.id_lugar][r.id_producto] = {};
+      admVolCache[r.id_lugar][r.id_producto][r.mes] = r.valor;
+    });
+    // render tabs + table
+    adminCurrentPlantIdx = Math.min(adminCurrentPlantIdx, selPlantsObj.length-1);
+    if (adminCurrentPlantIdx < 0) adminCurrentPlantIdx = 0;
+    view.innerHTML = `
+      <div class="plant-tabs" id="adm-plant-tabs"></div>
+      <div class="table-wrapper">
+        <table><thead id="adm-table-head"></thead><tbody id="adm-table-body"></tbody></table>
+      </div>
+      <div class="summary-strip" id="adm-summary-strip"></div>`;
+    renderAdminEditTabs(selPlantsObj);
+    renderAdminEditTable(selPlantsObj, selProductsObj);
+    editBar.style.display = 'flex';
+    document.getElementById('adm-editing-name').textContent = user ? user.nombre : username;
+  } else {
+    // Modo agregado: suma por lugar × producto × mes de varios clientes
+    const agg = {};  // agg[lugar][producto][mes] = suma
+    (data||[]).forEach(r => {
+      if (!agg[r.id_lugar]) agg[r.id_lugar] = {};
+      if (!agg[r.id_lugar][r.id_producto]) agg[r.id_lugar][r.id_producto] = {};
+      agg[r.id_lugar][r.id_producto][r.mes] = (agg[r.id_lugar][r.id_producto][r.mes]||0) + (parseFloat(r.valor)||0);
+    });
+    admVolCache = agg;
+    banner.style.display = 'flex';
+    document.getElementById('aggregate-banner-text').innerHTML =
+      `Modo <strong>agregado</strong>: sumando volúmenes de <strong>${selUsers.length} cliente(s)</strong>. Los valores son solo de lectura.`;
+    adminCurrentPlantIdx = Math.min(adminCurrentPlantIdx, selPlantsObj.length-1);
+    if (adminCurrentPlantIdx < 0) adminCurrentPlantIdx = 0;
+    view.innerHTML = `
+      <div class="plant-tabs" id="adm-plant-tabs"></div>
+      <div class="table-wrapper">
+        <table><thead id="adm-table-head"></thead><tbody id="adm-table-body"></tbody></table>
+      </div>
+      <div class="summary-strip" id="adm-summary-strip"></div>`;
+    renderAdminEditTabs(selPlantsObj);
+    renderAdminAggTable(selPlantsObj, selProductsObj);
+  }
+}
+
+function renderAdminEditTabs(plants) {
+  document.getElementById('adm-plant-tabs').innerHTML =
+    plants.map((p,i) =>
+      `<button class="tab-btn ${i===adminCurrentPlantIdx?'active':''}" onclick="adminSelectPlant(${i})">${p.Lugar_Entrega}</button>`
+    ).join('');
+}
+function adminSelectPlant(i) {
+  adminCurrentPlantIdx = i;
+  const selPlantsObj   = allPlants.filter(p => selPlants.includes(p.ID_LUGAR_ENTREGA));
+  const selProductsObj = allProducts.filter(p => selProducts.includes(p.ID_PRODUCTO));
+  renderAdminEditTabs(selPlantsObj);
+  if (selUsers.length === 1) renderAdminEditTable(selPlantsObj, selProductsObj);
+  else                       renderAdminAggTable(selPlantsObj, selProductsObj);
+}
+
+// Modo edición: 1 cliente
+function renderAdminEditTable(plants, products) {
+  const planta = plants[adminCurrentPlantIdx];
+  if (!planta) return;
+  document.getElementById('adm-table-head').innerHTML =
+    `<tr><th>${planta.Lugar_Entrega}</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr>`;
+  const tbody = document.getElementById('adm-table-body');
+  tbody.innerHTML = '';
+  products.forEach(prod => {
+    const tr = document.createElement('tr');
+    let cells = `<td>${prod.Producto}</td>`;
+    MONTHS.forEach((_,mi) => {
+      const val = admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[prod.ID_PRODUCTO]?.[mi] ?? '';
+      cells += `<td${val!==''?` class="has-value"`:''}><input class="cell-input" type="number" min="0" placeholder="0" value="${val}" data-lid="${planta.ID_LUGAR_ENTREGA}" data-pid="${prod.ID_PRODUCTO}" data-mi="${mi}" oninput="onAdminCell(this)"></td>`;
+    });
+    tr.innerHTML = cells; tbody.appendChild(tr);
+  });
+  const totals = MONTHS.map((_,mi) =>
+    products.reduce((s,pr) => s+(parseFloat(admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[pr.ID_PRODUCTO]?.[mi])||0), 0)
+  );
+  const trTot = document.createElement('tr');
+  trTot.className = 'totals-row';
+  trTot.innerHTML = `<td>Total mensual</td>${totals.map(t=>`<td>${t?t.toLocaleString('es-CL'):'—'}</td>`).join('')}`;
+  tbody.appendChild(trTot);
+  renderAdminSummary(plants, products);
+}
+
+function onAdminCell(inp) {
+  const { lid, pid, mi } = inp.dataset;
+  const val = inp.value !== '' ? parseFloat(inp.value) : null;
+  if (!admVolCache[lid]) admVolCache[lid] = {};
+  if (!admVolCache[lid][pid]) admVolCache[lid][pid] = {};
+  admVolCache[lid][pid][parseInt(mi)] = val;
+  inp.closest('td').classList.toggle('has-value', val !== null);
+  const selPlantsObj   = allPlants.filter(p => selPlants.includes(p.ID_LUGAR_ENTREGA));
+  const selProductsObj = allProducts.filter(p => selProducts.includes(p.ID_PRODUCTO));
+  const planta = selPlantsObj[adminCurrentPlantIdx];
+  const totals = MONTHS.map((_,mi) =>
+    selProductsObj.reduce((s,pr) => s+(parseFloat(admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[pr.ID_PRODUCTO]?.[mi])||0), 0)
+  );
+  document.querySelectorAll('#adm-table-body .totals-row td').forEach((td,i) => {
+    if (i>0) td.textContent = totals[i-1] ? totals[i-1].toLocaleString('es-CL') : '—';
+  });
+  renderAdminSummary(selPlantsObj, selProductsObj);
+}
+
+// Modo agregado: varios clientes
+function renderAdminAggTable(plants, products) {
+  const planta = plants[adminCurrentPlantIdx];
+  if (!planta) return;
+  document.getElementById('adm-table-head').innerHTML =
+    `<tr><th>${planta.Lugar_Entrega}</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr>`;
+  const tbody = document.getElementById('adm-table-body');
+  tbody.innerHTML = '';
+  products.forEach(prod => {
+    const tr = document.createElement('tr');
+    let cells = `<td>${prod.Producto}</td>`;
+    MONTHS.forEach((_,mi) => {
+      const val = admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[prod.ID_PRODUCTO]?.[mi] || 0;
+      cells += `<td${val?` class="has-value"`:''} style="padding:18px 14px; text-align:right; font-weight:${val?'600':'400'}; color:${val?'var(--navy)':'var(--muted)'}">${val?val.toLocaleString('es-CL'):'—'}</td>`;
+    });
+    tr.innerHTML = cells; tbody.appendChild(tr);
+  });
+  const totals = MONTHS.map((_,mi) =>
+    products.reduce((s,pr) => s+(parseFloat(admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[pr.ID_PRODUCTO]?.[mi])||0), 0)
+  );
+  const trTot = document.createElement('tr');
+  trTot.className = 'totals-row';
+  trTot.innerHTML = `<td>Total mensual</td>${totals.map(t=>`<td>${t?t.toLocaleString('es-CL'):'—'}</td>`).join('')}`;
+  tbody.appendChild(trTot);
+  renderAdminSummary(plants, products);
+}
+
+function renderAdminSummary(plants, products) {
+  const planta = plants[adminCurrentPlantIdx];
+  if (!planta) return;
+  let grandPlant = 0;
+  products.forEach(pr => MONTHS.forEach((_,mi) => { grandPlant += parseFloat(admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[pr.ID_PRODUCTO]?.[mi]||0); }));
+  let grandAll = 0;
+  plants.forEach(p => products.forEach(pr => MONTHS.forEach((_,mi) => { grandAll += parseFloat(admVolCache?.[p.ID_LUGAR_ENTREGA]?.[pr.ID_PRODUCTO]?.[mi]||0); })));
+  const isSingle = selUsers.length === 1;
+  document.getElementById('adm-summary-strip').innerHTML = `
+    <div class="summary-item"><div class="summary-label">Total lugar actual</div><div class="summary-value">${grandPlant.toLocaleString('es-CL')}</div><div class="summary-unit">${planta.Lugar_Entrega}</div></div>
+    <div class="summary-item"><div class="summary-label">Total seleccionado</div><div class="summary-value">${grandAll.toLocaleString('es-CL')}</div><div class="summary-unit">todos los lugares filtrados</div></div>
+    <div class="summary-item"><div class="summary-label">Clientes</div><div class="summary-value">${selUsers.length}</div><div class="summary-unit">${isSingle?'modo edición':'modo agregado'}</div></div>
+    <div class="summary-item"><div class="summary-label">Lugares · Productos</div><div class="summary-value" style="font-size:20px">${selPlants.length} · ${selProducts.length}</div><div class="summary-unit">en el filtro</div></div>`;
+}
+
+async function saveAdminData() {
+  if (selUsers.length !== 1) return;
+  const username = selUsers[0];
+  const btn   = document.getElementById('adm-btn-save');
+  const st    = document.getElementById('adm-save-status');
+  const stTxt = document.getElementById('adm-save-status-text');
+  btn.disabled = true;
+  stTxt.textContent = 'Guardando…'; st.className = 'save-status show';
+
+  const contrato = document.getElementById('adm-contrato').value;
+  const anio     = parseInt(document.getElementById('adm-year').value);
+  const rows = [];
+  const selPlantsObj   = allPlants.filter(p => selPlants.includes(p.ID_LUGAR_ENTREGA));
+  const selProductsObj = allProducts.filter(p => selProducts.includes(p.ID_PRODUCTO));
+  selPlantsObj.forEach(planta => {
+    selProductsObj.forEach(prod => {
+      MONTHS.forEach((_,mi) => {
+        const val = admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[prod.ID_PRODUCTO]?.[mi];
+        if (val !== null && val !== undefined) {
+          rows.push({
+            contrato, anio,
+            id_lugar:    planta.ID_LUGAR_ENTREGA,
+            id_producto: prod.ID_PRODUCTO,
+            mes: mi, valor: val,
+            username, updated_at: new Date().toISOString()
+          });
+        }
+      });
+    });
+  });
+  let ok = true;
+  if (rows.length > 0) {
+    const { error } = await sb.from('volumenes').upsert(rows, { onConflict: 'username,contrato,anio,id_lugar,id_producto,mes' });
+    if (error) { ok=false; console.error(error); }
+  }
+  stTxt.textContent = ok ? '✓ Guardado correctamente' : '✗ Error al guardar';
+  st.className = `save-status ${ok?'ok':'err'} show`;
+  btn.disabled = false;
+  setTimeout(() => { st.className = 'save-status'; }, 3000);
+}
+
+// ─── ADMIN · CONFIGURACIÓN (lugares, productos, asignaciones) ───
+async function openAdminConfig() {
+  ['plants-list','products-list','user-plant-assign','user-product-assign'].forEach(id =>
+    document.getElementById(id).innerHTML = '<div class="section-loading"><div class="mini-spinner-dark"></div> Cargando…</div>'
+  );
+  const [rPl, rPr, rUs, rUPl, rUPr] = await Promise.all([
+    sb.from('plantas').select('*').order('orden'),
+    sb.from('productos').select('*').order('orden'),
+    sb.from('usuarios').select('username,nombre').eq('es_admin', false).order('nombre'),
+    sb.from('usuario_plantas').select('username,id_lugar'),
+    sb.from('usuario_productos').select('username,id_producto'),
+  ]);
+  draftPlants   = (rPl.data||[]).map(r=>({...r}));
+  draftProducts = (rPr.data||[]).map(r=>({...r}));
+  const users   = rUs.data||[];
+  draftUserPlants = {};
+  (rUPl.data||[]).forEach(r => { if(!draftUserPlants[r.username]) draftUserPlants[r.username]=[]; draftUserPlants[r.username].push(r.id_lugar); });
+  draftUserProducts = {};
+  (rUPr.data||[]).forEach(r => { if(!draftUserProducts[r.username]) draftUserProducts[r.username]=[]; draftUserProducts[r.username].push(r.id_producto); });
+  renderAdminList('plant');
+  renderAdminList('product');
+  renderAssign('plant', users);
+  renderAssign('product', users);
+}
+
+function renderAdminList(type) {
+  const isPlant = type==='plant';
+  const items   = isPlant ? draftPlants : draftProducts;
+  const listId  = isPlant ? 'plants-list' : 'products-list';
+  const countId = isPlant ? 'plant-count' : 'product-count';
+  const idField = isPlant ? 'ID_LUGAR_ENTREGA' : 'ID_PRODUCTO';
+  const nameField = isPlant ? 'Lugar_Entrega' : 'Producto';
+  document.getElementById(countId).textContent = items.length;
+  const list = document.getElementById(listId);
+  if (!items.length) { list.innerHTML = '<div class="empty-list">Sin elementos.</div>'; return; }
+  list.innerHTML = items.map((item,i) => `
+    <div class="admin-item">
+      <span class="item-id">${item[idField]||'NUEVO'}</span>
+      <input class="item-input" value="${item[nameField]}" placeholder="Nombre"
+        oninput="${isPlant?'draftPlants':'draftProducts'}[${i}]['${nameField}']=this.value">
+      <button class="btn-delete" onclick="removeAdminItem('${type}',${i})" title="Eliminar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+    </div>`).join('');
+}
+function addAdminItem(type) {
+  const isPlant = type==='plant';
+  if (isPlant) draftPlants.push({ ID_LUGAR_ENTREGA: null, Lugar_Entrega: 'Nuevo Lugar', orden: 999 });
+  else         draftProducts.push({ ID_PRODUCTO: null, Producto: 'Nuevo Producto', orden: 999 });
+  renderAdminList(type);
+  const inputs = document.getElementById(isPlant?'plants-list':'products-list').querySelectorAll('.item-input');
+  const last = inputs[inputs.length-1]; if(last){ last.focus(); last.select(); }
+}
+function removeAdminItem(type, i) {
+  if (type==='plant') draftPlants.splice(i,1); else draftProducts.splice(i,1);
+  renderAdminList(type);
+}
+function renderAssign(type, users) {
+  const isPlant = type==='plant';
+  const items = isPlant ? draftPlants : draftProducts;
+  const assignMap = isPlant ? draftUserPlants : draftUserProducts;
+  const idField   = isPlant ? 'ID_LUGAR_ENTREGA' : 'ID_PRODUCTO';
+  const nameField = isPlant ? 'Lugar_Entrega' : 'Producto';
+  const container = document.getElementById(isPlant ? 'user-plant-assign' : 'user-product-assign');
+  container.innerHTML = users.map(u => {
+    const assigned = assignMap[u.username] || [];
+    const chips = items.filter(i => i[idField]).map(item =>
+      `<button class="chip ${assigned.includes(item[idField])?'active':''}" onclick="toggleAssignDraft('${type}','${u.username}','${item[idField]}',this)">${item[nameField]}</button>`
+    ).join('');
+    return `<div class="user-assign-row">
+      <div style="min-width:200px">
+        <div class="user-assign-name">${u.nombre}</div>
+        <div class="user-assign-sub" id="sub-${type}-${u.username}">${u.username} · ${assigned.length} asignado(s)</div>
+      </div>
+      <div class="chips-wrap">${chips||'<span style="color:var(--muted);font-size:12px">Sin elementos</span>'}</div>
+    </div>`;
+  }).join('');
+}
+function toggleAssignDraft(type, username, id, btn) {
+  const map = type==='plant' ? draftUserPlants : draftUserProducts;
+  if (!map[username]) map[username]=[];
+  const arr = map[username]; const idx = arr.indexOf(id);
+  if (idx>=0) { arr.splice(idx,1); btn.classList.remove('active'); }
+  else        { arr.push(id);      btn.classList.add('active'); }
+  document.getElementById(`sub-${type}-${username}`).textContent = `${username} · ${arr.length} asignado(s)`;
+}
+
+async function saveAdminConfig() {
+  const btn = document.getElementById('btn-save-admin');
+  btn.disabled=true; btn.innerHTML='<div class="mini-spinner"></div> Guardando…';
+  document.querySelectorAll('#plants-list .item-input').forEach((inp,i) => { if(draftPlants[i]) draftPlants[i].Lugar_Entrega=inp.value.trim(); });
+  document.querySelectorAll('#products-list .item-input').forEach((inp,i) => { if(draftProducts[i]) draftProducts[i].Producto=inp.value.trim(); });
+  try {
+    for (const [i,p] of draftPlants.entries()) {
+      if (p.ID_LUGAR_ENTREGA) await sb.from('plantas').update({ Lugar_Entrega: p.Lugar_Entrega, orden:i }).eq('ID_LUGAR_ENTREGA', p.ID_LUGAR_ENTREGA);
+    }
+    for (const [i,p] of draftProducts.entries()) {
+      if (p.ID_PRODUCTO) await sb.from('productos').update({ Producto: p.Producto, orden:i }).eq('ID_PRODUCTO', p.ID_PRODUCTO);
+    }
+    for (const u of Object.keys(draftUserPlants)) {
+      await sb.from('usuario_plantas').delete().eq('username', u);
+      const rows = (draftUserPlants[u]||[]).map(id => ({ username:u, id_lugar:id }));
+      if (rows.length) await sb.from('usuario_plantas').insert(rows);
+    }
+    for (const u of Object.keys(draftUserProducts)) {
+      await sb.from('usuario_productos').delete().eq('username', u);
+      const rows = (draftUserProducts[u]||[]).map(id => ({ username:u, id_producto:id }));
+      if (rows.length) await sb.from('usuario_productos').insert(rows);
+    }
+    await loadAdminMasterData();
+    btn.innerHTML='✓ Guardado';
+    setTimeout(() => {
+      btn.disabled=false;
+      btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar cambios';
+      showAdminTab('volumes');
+    }, 1200);
+  } catch(e) {
+    console.error(e);
+    btn.disabled=false; btn.textContent='✗ Error — reintentar';
+  }
+}
+</script>
+</body>
+</html>
