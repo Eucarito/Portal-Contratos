@@ -173,13 +173,27 @@
   .admin-nav-btn.active { background:var(--surface); color:var(--navy); font-weight:600; box-shadow:var(--shadow-sm); }
 
   /* ADMIN — VISTA VOLUMENES */
+  .adm-volumes-layout { display:flex; gap:20px; align-items:flex-start; }
+  .adm-table-area { flex:1; min-width:0; }
+  .adm-sidebar { width:260px; flex-shrink:0; position:sticky; top:84px; }
+
   .admin-filter-bar {
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    padding:20px 24px; margin-bottom:24px;
+    padding:16px 18px; margin-bottom:16px;
   }
-  .filter-title { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:14px; font-weight:600; }
-  .filter-row { display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start; }
-  .filter-col { flex:1; min-width:240px; }
+  .filter-title { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; font-weight:600; }
+  .filter-row { display:flex; flex-direction:column; gap:14px; }
+  .filter-col { flex:1; }
+  .filter-col label { display:block; font-size:11px; color:var(--text-2); font-weight:600; margin-bottom:5px; }
+
+  /* KPIs sidebar */
+  .kpi-sidebar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
+  .kpi-sidebar-title { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; font-weight:600; }
+  .kpi-item { padding:10px 0; border-bottom:1px solid var(--border); }
+  .kpi-item:last-child { border-bottom:none; padding-bottom:0; }
+  .kpi-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+  .kpi-value { font-family:'Instrument Serif', serif; font-size:22px; color:var(--navy); line-height:1; }
+  .kpi-unit { font-size:11px; color:var(--muted); margin-top:2px; }
   .filter-col label { display:block; font-size:12px; color:var(--text-2); font-weight:600; margin-bottom:6px; }
 
   .multi-select-btn {
@@ -222,6 +236,51 @@
   }
   .filter-chip button { background:none; border:none; color:rgba(255,255,255,.7); cursor:pointer; padding:0 2px; font-size:14px; line-height:1; }
   .filter-chip button:hover { color:#fff; }
+
+  /* Hub buttons */
+  .hub-btns { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
+  .hub-btn { background:var(--surface); border:1px solid var(--border-strong); border-radius:6px; padding:6px 14px; font-family:inherit; font-size:12px; font-weight:600; color:var(--text-2); cursor:pointer; transition:all .15s; }
+  .hub-btn:hover { border-color:var(--navy); color:var(--navy); }
+  .hub-btn.active { background:var(--navy); border-color:var(--navy); color:#fff; }
+
+  /* Config ribbon */
+  .config-ribbon { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+  .config-ribbon-btn { background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius); padding:10px 18px; font-family:inherit; font-size:13px; font-weight:600; color:var(--text-2); cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:8px; }
+  .config-ribbon-btn:hover { border-color:var(--navy); color:var(--navy); background:var(--surface2); }
+  .config-ribbon-btn.active { background:var(--navy); border-color:var(--navy); color:#fff; }
+  .config-panel { display:none; }
+  .config-panel.open { display:block; animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Tolerance table */
+  .tol-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .tol-table th { padding:10px 14px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-2); background:var(--surface2); border-bottom:1px solid var(--border); font-weight:600; }
+  .tol-table td { padding:8px 14px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  .tol-table tr:last-child td { border-bottom:none; }
+  .tol-table tr:hover td { background:var(--surface2); }
+  .tol-input { background:var(--bg); border:1px solid var(--border-strong); border-radius:6px; padding:6px 10px; width:80px; font-family:inherit; font-size:13px; text-align:right; outline:none; transition:all .15s; color:var(--text); }
+  .tol-input:focus { border-color:var(--navy); background:var(--surface); }
+  .tol-sign { font-size:11px; font-weight:600; padding:2px 6px; border-radius:4px; display:inline-block; }
+  .tol-sign.plus { background:rgba(46,125,91,.12); color:var(--success); }
+  .tol-sign.minus { background:rgba(178,58,72,.12); color:var(--danger); }
+
+  /* Admin volumes layout */
+  .adm-volumes-layout { display:flex; gap:20px; align-items:flex-start; }
+  .adm-table-area { flex:1; min-width:0; }
+  .adm-sidebar { width:260px; flex-shrink:0; position:sticky; top:84px; display:flex; flex-direction:column; gap:16px; }
+  .admin-filter-bar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:0; }
+  .filter-row { display:flex; flex-direction:column; gap:14px; }
+  .filter-col { flex:1; min-width:unset; }
+  .filter-col label { display:block; font-size:11px; color:var(--text-2); font-weight:600; margin-bottom:5px; }
+  .kpi-sidebar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
+  .kpi-sidebar-title { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; font-weight:600; }
+  .kpi-item { padding:10px 0; border-bottom:1px solid var(--border); }
+  .kpi-item:last-child { border-bottom:none; padding-bottom:0; }
+  .kpi-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+  .kpi-value { font-family:'Instrument Serif', serif; font-size:22px; color:var(--navy); line-height:1; }
+  .kpi-unit { font-size:11px; color:var(--muted); margin-top:2px; }
+  .summary-strip { display:none !important; }
+  #adm-summary-strip { display:none !important; }
 
   .aggregate-banner {
     background:var(--accent-soft); border:1px solid rgba(200,155,60,.3); border-radius:var(--radius);
@@ -380,140 +439,233 @@
 
       <!-- ADMIN · VOLÚMENES -->
       <div id="adm-volumes">
-        <div class="admin-filter-bar">
-          <div class="filter-title">Filtros</div>
-          <div class="filter-row">
-            <div class="filter-col">
-              <label>Contrato / Año</label>
-              <div style="display:flex; gap:8px">
-                <select class="multi-select-btn" id="adm-contrato" style="cursor:pointer" onchange="renderAdminVolumes()">
-                  <option value="C-2024-001">C-2024-001</option>
-                  <option value="C-2024-002">C-2024-002</option>
-                  <option value="C-2025-001">C-2025-001</option>
-                  <option value="C-2026-001" selected>C-2026-001</option>
-                </select>
-                <select class="multi-select-btn" id="adm-year" style="cursor:pointer; max-width:100px" onchange="renderAdminVolumes()">
-                  <option value="2024">2024</option>
-                  <option value="2025">2025</option>
-                  <option value="2026" selected>2026</option>
-                </select>
-              </div>
+        <div class="adm-volumes-layout">
+          <!-- Tabla principal -->
+          <div class="adm-table-area">
+            <div id="aggregate-banner" class="aggregate-banner" style="display:none">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="aggregate-banner-text"></span>
             </div>
-
-            <div class="filter-col">
-              <label>Clientes</label>
-              <div class="dropdown">
-                <button class="multi-select-btn" onclick="toggleDropdown('dd-users')">
-                  <span id="dd-users-label">Todos los clientes</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="dropdown-panel" id="dd-users">
-                  <div class="dropdown-search"><input type="text" placeholder="Buscar cliente…" oninput="filterDropdown('dd-users', this.value)"></div>
-                  <div class="dropdown-actions">
-                    <button class="dropdown-action" onclick="selectAll('users', true)">Seleccionar todos</button>
-                    <button class="dropdown-action" onclick="selectAll('users', false)">Limpiar</button>
-                  </div>
-                  <div id="dd-users-list"></div>
+            <div class="meta-bar" id="adm-edit-bar" style="display:none">
+              <div class="meta-left">
+                <div class="meta-item">
+                  <span style="color:var(--muted); font-size:12px">Editando para</span>
+                  <strong id="adm-editing-name" style="color:var(--navy)">—</strong>
                 </div>
               </div>
-              <div class="filter-chips" id="chips-users"></div>
-            </div>
-
-            <div class="filter-col">
-              <label>Lugares</label>
-              <div class="dropdown">
-                <button class="multi-select-btn" onclick="toggleDropdown('dd-plants')">
-                  <span id="dd-plants-label">Todos los lugares</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              <div class="meta-save">
+                <div class="save-status" id="adm-save-status"><span id="adm-save-status-text"></span></div>
+                <button class="btn-save" id="adm-btn-save" onclick="saveAdminData()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  Guardar cambios
                 </button>
-                <div class="dropdown-panel" id="dd-plants">
-                  <div class="dropdown-actions">
-                    <button class="dropdown-action" onclick="selectAll('plants', true)">Seleccionar todos</button>
-                    <button class="dropdown-action" onclick="selectAll('plants', false)">Limpiar</button>
+              </div>
+            </div>
+            <div class="hub-btns">
+              <button class="hub-btn" id="hub-btn-aconcagua" onclick="selectHub('aconcagua')">Hub Aconcagua</button>
+              <button class="hub-btn" id="hub-btn-sanvicente" onclick="selectHub('sanvicente')">Hub San Vicente</button>
+            </div>
+            <div id="admin-volumes-view"></div>
+          </div>
+          <!-- Sidebar -->
+          <div class="adm-sidebar">
+            <div class="admin-filter-bar">
+              <div class="filter-title">Filtros</div>
+              <div class="filter-row">
+                <div class="filter-col">
+                  <label>Año</label>
+                  <select class="multi-select-btn" id="adm-year" style="cursor:pointer; width:100%" onchange="renderAdminVolumes()">
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                  </select>
+                </div>
+                <div class="filter-col">
+                  <label>Clientes</label>
+                  <div class="dropdown">
+                    <button class="multi-select-btn" onclick="toggleDropdown('dd-users')" style="width:100%">
+                      <span id="dd-users-label">Todos los clientes</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="dropdown-panel" id="dd-users">
+                      <div class="dropdown-search"><input type="text" placeholder="Buscar cliente…" oninput="filterDropdown('dd-users', this.value)"></div>
+                      <div class="dropdown-actions">
+                        <button class="dropdown-action" onclick="selectAll('users', true)">Todos</button>
+                        <button class="dropdown-action" onclick="selectAll('users', false)">Limpiar</button>
+                      </div>
+                      <div id="dd-users-list"></div>
+                    </div>
                   </div>
-                  <div id="dd-plants-list"></div>
+                  <div class="filter-chips" id="chips-users"></div>
+                </div>
+                <div class="filter-col">
+                  <label>Lugares</label>
+                  <div class="dropdown">
+                    <button class="multi-select-btn" onclick="toggleDropdown('dd-plants')" style="width:100%">
+                      <span id="dd-plants-label">Todos los lugares</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="dropdown-panel" id="dd-plants">
+                      <div class="dropdown-actions">
+                        <button class="dropdown-action" onclick="selectAll('plants', true)">Todos</button>
+                        <button class="dropdown-action" onclick="selectAll('plants', false)">Limpiar</button>
+                      </div>
+                      <div id="dd-plants-list"></div>
+                    </div>
+                  </div>
+                  <div class="filter-chips" id="chips-plants"></div>
+                </div>
+                <div class="filter-col">
+                  <label>Productos</label>
+                  <div class="dropdown">
+                    <button class="multi-select-btn" onclick="toggleDropdown('dd-products')" style="width:100%">
+                      <span id="dd-products-label">Todos los productos</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="dropdown-panel" id="dd-products">
+                      <div class="dropdown-actions">
+                        <button class="dropdown-action" onclick="selectAll('products', true)">Todos</button>
+                        <button class="dropdown-action" onclick="selectAll('products', false)">Limpiar</button>
+                      </div>
+                      <div id="dd-products-list"></div>
+                    </div>
+                  </div>
+                  <div class="filter-chips" id="chips-products"></div>
                 </div>
               </div>
-              <div class="filter-chips" id="chips-plants"></div>
             </div>
-
-            <div class="filter-col">
-              <label>Productos</label>
-              <div class="dropdown">
-                <button class="multi-select-btn" onclick="toggleDropdown('dd-products')">
-                  <span id="dd-products-label">Todos los productos</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="dropdown-panel" id="dd-products">
-                  <div class="dropdown-actions">
-                    <button class="dropdown-action" onclick="selectAll('products', true)">Seleccionar todos</button>
-                    <button class="dropdown-action" onclick="selectAll('products', false)">Limpiar</button>
-                  </div>
-                  <div id="dd-products-list"></div>
-                </div>
-              </div>
-              <div class="filter-chips" id="chips-products"></div>
+            <div class="kpi-sidebar" id="adm-kpi-sidebar" style="display:none">
+              <div class="kpi-sidebar-title">Resumen</div>
+              <div id="adm-kpi-items"></div>
             </div>
           </div>
         </div>
-
-        <!-- Modo: edición por cliente único O agregado -->
-        <div id="aggregate-banner" class="aggregate-banner" style="display:none">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <span id="aggregate-banner-text"></span>
-        </div>
-
-        <div class="meta-bar" id="adm-edit-bar" style="display:none">
-          <div class="meta-left">
-            <div class="meta-item">
-              <span style="color:var(--muted); font-size:12px">Editando para</span>
-              <strong id="adm-editing-name" style="color:var(--navy)">—</strong>
-            </div>
-          </div>
-          <div class="meta-save">
-            <div class="save-status" id="adm-save-status"><span id="adm-save-status-text"></span></div>
-            <button class="btn-save" id="adm-btn-save" onclick="saveAdminData()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              Guardar cambios
-            </button>
-          </div>
-        </div>
-
-        <div id="admin-volumes-view"></div>
       </div>
 
       <!-- ADMIN · CONFIGURACIÓN -->
       <div id="adm-config" style="display:none">
-        <div class="admin-section">
-          <div class="admin-section-header">
-            <div class="admin-section-title">Lugares de Entrega <span class="count" id="plant-count">0</span></div>
-            <button class="btn-add" onclick="addAdminItem('plant')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Agregar lugar
-            </button>
+        <!-- Cinta de navegación -->
+        <div class="config-ribbon">
+          <button class="config-ribbon-btn active" id="cfg-btn-lugares" onclick="showConfigPanel('lugares')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Lugares de Entrega
+          </button>
+          <button class="config-ribbon-btn" id="cfg-btn-productos" onclick="showConfigPanel('productos')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Productos
+          </button>
+          <button class="config-ribbon-btn" id="cfg-btn-lug-cliente" onclick="showConfigPanel('lug-cliente')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Lugares por cliente
+          </button>
+          <button class="config-ribbon-btn" id="cfg-btn-prod-cliente" onclick="showConfigPanel('prod-cliente')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            Productos por cliente
+          </button>
+          <button class="config-ribbon-btn" id="cfg-btn-tol-cliente" onclick="showConfigPanel('tol-cliente')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Tolerancia por cliente
+          </button>
+          <button class="config-ribbon-btn" id="cfg-btn-tol-lugar" onclick="showConfigPanel('tol-lugar')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Tolerancia por lugar
+          </button>
+          <button class="config-ribbon-btn" id="cfg-btn-tol-anual" onclick="showConfigPanel('tol-anual')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Tolerancia anual
+          </button>
+        </div>
+
+        <!-- Panel: Lugares de Entrega -->
+        <div class="config-panel open" id="cfg-panel-lugares">
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <div class="admin-section-title">Lugares de Entrega <span class="count" id="plant-count">0</span></div>
+              <button class="btn-add" onclick="addAdminItem('plant')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Agregar lugar
+              </button>
+            </div>
+            <div class="admin-list" id="plants-list"></div>
           </div>
-          <div class="admin-list" id="plants-list"></div>
         </div>
 
-        <div class="admin-section">
-          <div class="admin-section-header">
-            <div class="admin-section-title">Productos <span class="count" id="product-count">0</span></div>
-            <button class="btn-add" onclick="addAdminItem('product')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Agregar producto
-            </button>
+        <!-- Panel: Productos -->
+        <div class="config-panel" id="cfg-panel-productos">
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <div class="admin-section-title">Productos <span class="count" id="product-count">0</span></div>
+              <button class="btn-add" onclick="addAdminItem('product')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Agregar producto
+              </button>
+            </div>
+            <div class="admin-list" id="products-list"></div>
           </div>
-          <div class="admin-list" id="products-list"></div>
         </div>
 
-        <div class="admin-section">
-          <div class="admin-section-header"><div class="admin-section-title">Lugares por cliente</div></div>
-          <div id="user-plant-assign"></div>
+        <!-- Panel: Lugares por cliente -->
+        <div class="config-panel" id="cfg-panel-lug-cliente">
+          <div class="admin-section">
+            <div class="admin-section-header"><div class="admin-section-title">Lugares por cliente</div></div>
+            <div id="user-plant-assign"></div>
+          </div>
         </div>
 
-        <div class="admin-section">
-          <div class="admin-section-header"><div class="admin-section-title">Productos por cliente</div></div>
-          <div id="user-product-assign"></div>
+        <!-- Panel: Productos por cliente -->
+        <div class="config-panel" id="cfg-panel-prod-cliente">
+          <div class="admin-section">
+            <div class="admin-section-header"><div class="admin-section-title">Productos por cliente</div></div>
+            <div id="user-product-assign"></div>
+          </div>
+        </div>
+
+        <!-- Panel: Tolerancia por cliente -->
+        <div class="config-panel" id="cfg-panel-tol-cliente">
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <div class="admin-section-title">Tolerancia mensual por cliente</div>
+              <div style="font-size:12px; color:var(--muted)">% de variación permitida respecto al volumen comprometido</div>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="tol-table" id="tol-cliente-table">
+                <thead><tr><th>Cliente</th><th>Exceso <span class="tol-sign plus">+</span></th><th>Defecto <span class="tol-sign minus">−</span></th></tr></thead>
+                <tbody id="tol-cliente-body"><tr><td colspan="3" class="empty-list">Cargando…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel: Tolerancia por lugar -->
+        <div class="config-panel" id="cfg-panel-tol-lugar">
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <div class="admin-section-title">Tolerancia mensual por lugar</div>
+              <div style="font-size:12px; color:var(--muted)">% de variación permitida respecto al volumen comprometido</div>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="tol-table" id="tol-lugar-table">
+                <thead><tr><th>Lugar</th><th>Exceso <span class="tol-sign plus">+</span></th><th>Defecto <span class="tol-sign minus">−</span></th></tr></thead>
+                <tbody id="tol-lugar-body"><tr><td colspan="3" class="empty-list">Cargando…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel: Tolerancia anual -->
+        <div class="config-panel" id="cfg-panel-tol-anual">
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <div class="admin-section-title">Tolerancia anual por cliente</div>
+              <div style="font-size:12px; color:var(--muted)">% de variación anual acumulada permitida</div>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="tol-table" id="tol-anual-table">
+                <thead><tr><th>Cliente</th><th>Exceso <span class="tol-sign plus">+</span></th><th>Defecto <span class="tol-sign minus">−</span></th></tr></thead>
+                <tbody id="tol-anual-body"><tr><td colspan="3" class="empty-list">Cargando…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         <div class="admin-footer">
@@ -640,6 +792,8 @@ function onContextChange() { currentPlantIdx=0; volCache={}; buildTabs(); render
 
 // ═══════ CLIENTE ─ TABLA ═══════
 function buildTabs() {
+  buildHubBtnsClient();
+  activeClientHub = null;
   document.getElementById('plant-tabs').innerHTML =
     userPlants.map((p,i) =>
       `<button class="tab-btn ${i===currentPlantIdx?'active':''}" onclick="selectPlant(${i})">${p.Lugar_Entrega}</button>`
@@ -924,7 +1078,7 @@ async function renderAdminVolumes() {
     return;
   }
 
-  const contrato = document.getElementById('adm-contrato').value;
+  const contrato = 'C-2026-001';
   const anio     = parseInt(document.getElementById('adm-year').value);
 
   // Un solo cliente → modo edición (tabla tabs como cliente)
@@ -1082,18 +1236,7 @@ function renderAdminAggTable(plants, products) {
 }
 
 function renderAdminSummary(plants, products) {
-  const planta = plants[adminCurrentPlantIdx];
-  if (!planta) return;
-  let grandPlant = 0;
-  products.forEach(pr => MONTHS.forEach((_,mi) => { grandPlant += parseFloat(admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[pr.ID_PRODUCTO]?.[mi]||0); }));
-  let grandAll = 0;
-  plants.forEach(p => products.forEach(pr => MONTHS.forEach((_,mi) => { grandAll += parseFloat(admVolCache?.[p.ID_LUGAR_ENTREGA]?.[pr.ID_PRODUCTO]?.[mi]||0); })));
-  const isSingle = selUsers.length === 1;
-  document.getElementById('adm-summary-strip').innerHTML = `
-    <div class="summary-item"><div class="summary-label">Total lugar actual</div><div class="summary-value">${grandPlant.toLocaleString('es-CL')}</div><div class="summary-unit">${planta.Lugar_Entrega}</div></div>
-    <div class="summary-item"><div class="summary-label">Total seleccionado</div><div class="summary-value">${grandAll.toLocaleString('es-CL')}</div><div class="summary-unit">todos los lugares filtrados</div></div>
-    <div class="summary-item"><div class="summary-label">Clientes</div><div class="summary-value">${selUsers.length}</div><div class="summary-unit">${isSingle?'modo edición':'modo agregado'}</div></div>
-    <div class="summary-item"><div class="summary-label">Lugares · Productos</div><div class="summary-value" style="font-size:20px">${selPlants.length} · ${selProducts.length}</div><div class="summary-unit">en el filtro</div></div>`;
+  updateAdminKpi(plants, products);
 }
 
 async function saveAdminData() {
@@ -1105,7 +1248,7 @@ async function saveAdminData() {
   btn.disabled = true;
   stTxt.textContent = 'Guardando…'; st.className = 'save-status show';
 
-  const contrato = document.getElementById('adm-contrato').value;
+  const contrato = 'C-2026-001';
   const anio     = parseInt(document.getElementById('adm-year').value);
   const rows = [];
   const selPlantsObj   = allPlants.filter(p => selPlants.includes(p.ID_LUGAR_ENTREGA));
@@ -1222,6 +1365,198 @@ function toggleAssignDraft(type, username, id, btn) {
   if (idx>=0) { arr.splice(idx,1); btn.classList.remove('active'); }
   else        { arr.push(id);      btn.classList.add('active'); }
   document.getElementById(`sub-${type}-${username}`).textContent = `${username} · ${arr.length} asignado(s)`;
+}
+
+// ─── CONFIG RIBBON ───
+function showConfigPanel(panel) {
+  const panels = ['lugares','productos','lug-cliente','prod-cliente','tol-cliente','tol-lugar','tol-anual'];
+  panels.forEach(p => {
+    document.getElementById(`cfg-panel-${p}`).classList.toggle('open', p===panel);
+    document.getElementById(`cfg-btn-${p}`).classList.toggle('active', p===panel);
+  });
+  if (panel==='tol-cliente') renderTolCliente();
+  if (panel==='tol-lugar')   renderTolLugar();
+  if (panel==='tol-anual')   renderTolAnual();
+}
+
+// ─── TOLERANCIAS ───
+let draftTolCliente = {};
+let draftTolLugar   = {};
+let draftTolAnual   = {};
+
+function renderTolCliente() {
+  const users = allUsers;
+  const tbody = document.getElementById('tol-cliente-body');
+  if (!users.length) { tbody.innerHTML = '<tr><td colspan="3" class="empty-list">Sin clientes.</td></tr>'; return; }
+  tbody.innerHTML = users.map(u => {
+    const t = draftTolCliente[u.username] || { exceso: 10, defecto: 10 };
+    return `<tr>
+      <td style="font-weight:500">${u.nombre}<br><span style="font-size:11px;color:var(--muted)">${u.username}</span></td>
+      <td><span class="tol-sign plus">+</span> <input class="tol-input" type="number" min="0" max="100" value="${t.exceso}"
+        oninput="setTol('cliente','${u.username}','exceso',this.value)"> %</td>
+      <td><span class="tol-sign minus">−</span> <input class="tol-input" type="number" min="0" max="100" value="${t.defecto}"
+        oninput="setTol('cliente','${u.username}','defecto',this.value)"> %</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTolLugar() {
+  const tbody = document.getElementById('tol-lugar-body');
+  if (!draftPlants.length) { tbody.innerHTML = '<tr><td colspan="3" class="empty-list">Sin lugares.</td></tr>'; return; }
+  tbody.innerHTML = draftPlants.map(p => {
+    const id = p.ID_LUGAR_ENTREGA || 'NUEVO';
+    const t = draftTolLugar[id] || { exceso: 10, defecto: 10 };
+    return `<tr>
+      <td style="font-weight:500">${p.Lugar_Entrega}</td>
+      <td><span class="tol-sign plus">+</span> <input class="tol-input" type="number" min="0" max="100" value="${t.exceso}"
+        oninput="setTol('lugar','${id}','exceso',this.value)"> %</td>
+      <td><span class="tol-sign minus">−</span> <input class="tol-input" type="number" min="0" max="100" value="${t.defecto}"
+        oninput="setTol('lugar','${id}','defecto',this.value)"> %</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTolAnual() {
+  const users = allUsers;
+  const tbody = document.getElementById('tol-anual-body');
+  if (!users.length) { tbody.innerHTML = '<tr><td colspan="3" class="empty-list">Sin clientes.</td></tr>'; return; }
+  tbody.innerHTML = users.map(u => {
+    const t = draftTolAnual[u.username] || { exceso: 10, defecto: 10 };
+    return `<tr>
+      <td style="font-weight:500">${u.nombre}<br><span style="font-size:11px;color:var(--muted)">${u.username}</span></td>
+      <td><span class="tol-sign plus">+</span> <input class="tol-input" type="number" min="0" max="100" value="${t.exceso}"
+        oninput="setTol('anual','${u.username}','exceso',this.value)"> %</td>
+      <td><span class="tol-sign minus">−</span> <input class="tol-input" type="number" min="0" max="100" value="${t.defecto}"
+        oninput="setTol('anual','${u.username}','defecto',this.value)"> %</td>
+    </tr>`;
+  }).join('');
+}
+
+function setTol(type, key, field, val) {
+  const map = type==='cliente' ? draftTolCliente : type==='lugar' ? draftTolLugar : draftTolAnual;
+  if (!map[key]) map[key] = { exceso: 10, defecto: 10 };
+  map[key][field] = parseFloat(val) || 0;
+}
+
+// ─── HUB LOGIC (admin) ───
+const HUB_DEFS = {
+  aconcagua:  ['Aconcagua', 'Maipú'],
+  sanvicente: ['San Fernando', 'Linares', 'Bio Bío', 'BioBío', 'Biobío']
+};
+let activeHub = null;
+
+function selectHub(hub) {
+  if (activeHub === hub) {
+    activeHub = null;
+    document.getElementById('hub-btn-aconcagua').classList.remove('active');
+    document.getElementById('hub-btn-sanvicente').classList.remove('active');
+    selPlants = allPlants.map(p => p.ID_LUGAR_ENTREGA);
+  } else {
+    activeHub = hub;
+    document.getElementById('hub-btn-aconcagua').classList.toggle('active', hub==='aconcagua');
+    document.getElementById('hub-btn-sanvicente').classList.toggle('active', hub==='sanvicente');
+    const names = HUB_DEFS[hub];
+    const filtered = allPlants.filter(p => names.some(n => p.Lugar_Entrega.toLowerCase().includes(n.toLowerCase())));
+    selPlants = filtered.length ? filtered.map(p => p.ID_LUGAR_ENTREGA) : allPlants.map(p => p.ID_LUGAR_ENTREGA);
+  }
+  adminCurrentPlantIdx = 0;
+  renderDropdown('dd-plants-list', allPlants, 'ID_LUGAR_ENTREGA', 'Lugar_Entrega', selPlants, 'plants');
+  updateFilterChips();
+  renderAdminVolumes();
+}
+
+// ─── HUB LOGIC (cliente) ───
+let activeClientHub = null;
+
+function buildHubBtnsClient() {
+  let container = document.getElementById('client-hub-btns');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'client-hub-btns';
+    container.className = 'hub-btns';
+    const tabsEl = document.getElementById('plant-tabs');
+    tabsEl.parentNode.insertBefore(container, tabsEl);
+  }
+  container.innerHTML =
+    `<button class="hub-btn ${activeClientHub==='aconcagua'?'active':''}" id="chub-btn-aconcagua" onclick="selectClientHub('aconcagua')">Hub Aconcagua</button>
+     <button class="hub-btn ${activeClientHub==='sanvicente'?'active':''}" id="chub-btn-sanvicente" onclick="selectClientHub('sanvicente')">Hub San Vicente</button>`;
+}
+
+function selectClientHub(hub) {
+  if (activeClientHub === hub) {
+    activeClientHub = null;
+    buildHubBtnsClient(); buildTabs(); renderTable(); return;
+  }
+  activeClientHub = hub;
+  buildHubBtnsClient();
+  renderClientHubTable(hub);
+}
+
+async function renderClientHubTable(hub) {
+  const names = HUB_DEFS[hub];
+  const hubPlants = userPlants.filter(p => names.some(n => p.Lugar_Entrega.toLowerCase().includes(n.toLowerCase())));
+  if (!hubPlants.length) {
+    document.getElementById('table-head').innerHTML = '';
+    document.getElementById('table-body').innerHTML = `<tr><td style="padding:40px;text-align:center;color:var(--muted)">No tienes lugares asignados en este hub.</td></tr>`;
+    document.getElementById('plant-tabs').innerHTML = '';
+    return;
+  }
+  const contrato = document.getElementById('sel-contrato').value;
+  const anio     = parseInt(document.getElementById('sel-year').value);
+  const hubLabel = hub==='aconcagua' ? 'Hub Aconcagua' : 'Hub San Vicente';
+
+  document.getElementById('plant-tabs').innerHTML = hubPlants.map(p =>
+    `<button class="tab-btn" style="cursor:default">${p.Lugar_Entrega}</button>`).join('');
+
+  document.getElementById('table-head').innerHTML =
+    `<tr><th>${hubLabel}</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr>`;
+  document.getElementById('table-body').innerHTML =
+    `<tr><td colspan="${MONTHS.length+1}"><div class="section-loading"><div class="mini-spinner-dark"></div> Cargando…</div></td></tr>`;
+
+  const { data } = await sb.from('volumenes').select('id_producto,mes,valor,id_lugar')
+    .eq('username', currentUser.username).eq('contrato', contrato).eq('anio', anio)
+    .in('id_lugar', hubPlants.map(p => p.ID_LUGAR_ENTREGA));
+
+  const agg = {};
+  (data||[]).forEach(r => {
+    if (!agg[r.id_producto]) agg[r.id_producto] = {};
+    agg[r.id_producto][r.mes] = (agg[r.id_producto][r.mes]||0) + (parseFloat(r.valor)||0);
+  });
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  userProducts.forEach(prod => {
+    const tr = document.createElement('tr');
+    let cells = `<td>${prod.Producto}</td>`;
+    MONTHS.forEach((_,mi) => {
+      const val = agg?.[prod.ID_PRODUCTO]?.[mi] || 0;
+      cells += `<td${val?` class="has-value"`:''} style="padding:18px 14px;text-align:right;font-weight:${val?'600':'400'};color:${val?'var(--navy)':'var(--muted)'}">${val?val.toLocaleString('es-CL'):'—'}</td>`;
+    });
+    tr.innerHTML = cells; tbody.appendChild(tr);
+  });
+  const totals = MONTHS.map((_,mi) => userProducts.reduce((s,pr) => s+(parseFloat(agg?.[pr.ID_PRODUTO]?.[mi]||agg?.[pr.ID_PRODUCTO]?.[mi])||0), 0));
+  const trTot = document.createElement('tr');
+  trTot.className = 'totals-row';
+  trTot.innerHTML = `<td>Total Hub</td>${totals.map(t=>`<td>${t?t.toLocaleString('es-CL'):'—'}</td>`).join('')}`;
+  tbody.appendChild(trTot);
+}
+
+// ─── KPI SIDEBAR ───
+function updateAdminKpi(plants, products) {
+  const sidebar = document.getElementById('adm-kpi-sidebar');
+  const items   = document.getElementById('adm-kpi-items');
+  if (!plants || !plants.length) { sidebar.style.display='none'; return; }
+  const planta = plants[adminCurrentPlantIdx] || plants[0];
+  let grandPlant = 0;
+  products.forEach(pr => MONTHS.forEach((_,mi) => { grandPlant += parseFloat(admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[pr.ID_PRODUCTO]?.[mi]||0); }));
+  let grandAll = 0;
+  plants.forEach(p => products.forEach(pr => MONTHS.forEach((_,mi) => { grandAll += parseFloat(admVolCache?.[p.ID_LUGAR_ENTREGA]?.[pr.ID_PRODUCTO]?.[mi]||0); })));
+  items.innerHTML = `
+    <div class="kpi-item"><div class="kpi-label">Total lugar actual</div><div class="kpi-value">${grandPlant.toLocaleString('es-CL')}</div><div class="kpi-unit">${planta.Lugar_Entrega}</div></div>
+    <div class="kpi-item"><div class="kpi-label">Total seleccionado</div><div class="kpi-value">${grandAll.toLocaleString('es-CL')}</div><div class="kpi-unit">todos los lugares</div></div>
+    <div class="kpi-item"><div class="kpi-label">Clientes</div><div class="kpi-value">${selUsers.length}</div><div class="kpi-unit">${selUsers.length===1?'modo edición':'modo agregado'}</div></div>
+    <div class="kpi-item"><div class="kpi-label">Lugares · Prods</div><div class="kpi-value" style="font-size:18px">${selPlants.length} · ${selProducts.length}</div><div class="kpi-unit">en el filtro</div></div>`;
+  sidebar.style.display = 'block';
 }
 
 async function saveAdminConfig() {
