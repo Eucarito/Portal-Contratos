@@ -345,6 +345,29 @@
   .empty-state-icon { width:48px; height:48px; margin:0 auto 14px; opacity:.4; }
   .empty-state h3 { font-family:'Instrument Serif', serif; font-size:22px; color:var(--navy); margin-bottom:4px; }
   .empty-state p { font-size:14px; }
+
+  /* History modal */
+  .history-modal-bg { position:fixed; inset:0; background:rgba(15,30,60,.55); z-index:1000; display:none; align-items:center; justify-content:center; padding:40px; backdrop-filter: blur(4px); }
+  .history-modal { background:var(--surface); border-radius:12px; width:95%; max-width:1200px; max-height:90vh; display:flex; flex-direction:column; box-shadow:var(--shadow-lg); overflow:hidden; }
+  .history-head { padding:18px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--surface2); }
+  .history-head h3 { font-family:'Instrument Serif', serif; font-size:22px; color:var(--enap-navy); font-weight:400; letter-spacing:-.01em; }
+  .history-close { background:none; border:none; font-size:22px; color:var(--muted); cursor:pointer; padding:4px 10px; border-radius:6px; }
+  .history-close:hover { background:var(--surface); color:var(--text); }
+  .history-body { display:flex; flex:1; overflow:hidden; min-height:500px; }
+  .history-sidebar { width:320px; border-right:1px solid var(--border); overflow-y:auto; background:var(--surface2); flex-shrink:0; }
+  .history-detail { flex:1; padding:20px 24px; overflow-y:auto; }
+  .hist-item { padding:14px 20px; border-bottom:1px solid var(--border); cursor:pointer; transition:all .15s; background:transparent; }
+  .hist-item:hover { background:var(--surface); }
+  .hist-item.selected { background:var(--surface); border-left:3px solid var(--enap-teal); }
+  .hist-ver { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .hist-ver strong { font-size:15px; color:var(--enap-navy); font-weight:700; font-family:'SF Mono',Consolas,monospace; letter-spacing:.02em; }
+  .hist-badge-active { font-size:10px; font-weight:700; background:var(--enap-teal); color:#fff; padding:2px 8px; border-radius:99px; letter-spacing:.05em; }
+  .hist-meta { display:flex; flex-direction:column; gap:2px; font-size:12px; color:var(--text-2); }
+  .hist-author { font-size:11px; color:var(--muted); }
+  .hist-plant-block { margin-bottom:20px; }
+  .hist-plant-title { font-size:13px; font-weight:700; color:var(--enap-navy); margin-bottom:8px; letter-spacing:.02em; }
+  .btn-history { background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius); padding:11px 18px; font-family:inherit; font-size:13px; font-weight:600; color:var(--text-2); cursor:pointer; display:flex; align-items:center; gap:8px; transition:all .15s; }
+  .btn-history:hover { border-color:var(--enap-teal); color:var(--enap-teal); }
 </style>
 </head>
 <body>
@@ -431,6 +454,10 @@
         </div>
         <div class="meta-save">
           <div class="save-status" id="save-status"><span id="save-status-text"></span></div>
+          <button class="btn-history" onclick="openHistory(currentUser.username, parseInt(document.getElementById('sel-year').value), currentUser.nombre)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Historial
+          </button>
           <button class="btn-save" id="btn-guardar" onclick="saveData()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             Guardar
@@ -478,6 +505,10 @@
               </div>
               <div class="meta-save">
                 <div class="save-status" id="adm-save-status"><span id="adm-save-status-text"></span></div>
+                <button class="btn-history" onclick="openAdminHistory()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Historial
+                </button>
                 <button class="btn-save" id="adm-btn-save" onclick="saveAdminData()">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                   Guardar cambios
@@ -703,6 +734,21 @@
   </div>
 </div>
 
+
+<!-- History Modal -->
+<div class="history-modal-bg" id="history-modal" onclick="closeHistory()">
+  <div class="history-modal" onclick="event.stopPropagation()">
+    <div class="history-head">
+      <h3 id="hist-title">Historial de versiones</h3>
+      <button class="history-close" onclick="closeHistory()">×</button>
+    </div>
+    <div class="history-body">
+      <div class="history-sidebar" id="hist-list"></div>
+      <div class="history-detail" id="hist-detail"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = 'https://dawsaejcxhfufrgiewxu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhd3NhZWpjeGhmdWZyZ2lld3h1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODE5MTEsImV4cCI6MjA5MjM1NzkxMX0.PjfDpby2xtyNyC7wKy4vOK1tr2ZkKuZ6DSqCW7-8Zac';
@@ -724,6 +770,219 @@ let allUsers = [], allPlants = [], allProducts = [];
 let selUsers = [], selPlants = [], selProducts = [];
 let admVolCache = {};         // admVolCache[plantaId][productoId][mes] = valor (cuando es 1 cliente)
 let adminCurrentPlantIdx = 0;
+
+// ═══════════════════════════════════════════════════════
+//   VERSIONED SAVE + HISTORY
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Save rows with versioning:
+ * 1. Read currently active (version='A00') rows for this user+year
+ * 2. Move them to next historical version (001, 002, ...)
+ * 3. Insert new rows as A00
+ * @param {string} username - volume owner (cliente)
+ * @param {number} anio
+ * @param {Array} rows   - rows to save. Each needs: contrato, anio, id_lugar, id_producto, mes, valor, username
+ * @param {string} modified_by - who performed the edit
+ * @param {string} modified_by_role - 'admin' | 'cliente'
+ * @returns {Promise<boolean>} success
+ */
+async function versionedSave({ username, anio, rows, modified_by, modified_by_role }) {
+  if (!rows || rows.length === 0) return true;
+  const now = new Date().toISOString();
+
+  try {
+    // 1. Find next version number for this username+anio
+    const { data: existing, error: e1 } = await sb
+      .from('volumenes')
+      .select('version')
+      .eq('username', username)
+      .eq('anio', anio);
+    if (e1) throw e1;
+
+    let maxVer = 0;
+    (existing || []).forEach(r => {
+      if (r.version !== 'A00' && /^\d+$/.test(r.version)) {
+        const n = parseInt(r.version);
+        if (n > maxVer) maxVer = n;
+      }
+    });
+    const nextVer = String(maxVer + 1).padStart(3, '0');
+
+    // 2. Move all active (A00) rows to nextVer
+    const { error: e2 } = await sb
+      .from('volumenes')
+      .update({ version: nextVer })
+      .eq('username', username)
+      .eq('anio', anio)
+      .eq('version', 'A00');
+    if (e2) throw e2;
+
+    // 3. Insert new rows as A00
+    const toInsert = rows.map(r => ({
+      ...r,
+      version: 'A00',
+      updated_at: now,
+      modified_by,
+      modified_by_role,
+    }));
+    const { error: e3 } = await sb.from('volumenes').insert(toInsert);
+    if (e3) throw e3;
+
+    return true;
+  } catch (err) {
+    console.error('versionedSave error:', err);
+    return false;
+  }
+}
+
+/**
+ * Load history summary for a user+anio: list of versions with metadata
+ * @returns {Array<{version, updated_at, modified_by, modified_by_role, rowCount}>}
+ */
+async function loadVersionHistory(username, anio) {
+  const { data, error } = await sb
+    .from('volumenes')
+    .select('version, updated_at, modified_by, modified_by_role')
+    .eq('username', username)
+    .eq('anio', anio)
+    .order('updated_at', { ascending: false });
+  if (error) { console.error(error); return []; }
+
+  // Group by version
+  const byVer = {};
+  (data || []).forEach(r => {
+    if (!byVer[r.version]) {
+      byVer[r.version] = {
+        version: r.version,
+        updated_at: r.updated_at,
+        modified_by: r.modified_by || '—',
+        modified_by_role: r.modified_by_role || '—',
+        rowCount: 0,
+      };
+    } else if (new Date(r.updated_at) > new Date(byVer[r.version].updated_at)) {
+      byVer[r.version].updated_at = r.updated_at;
+      byVer[r.version].modified_by = r.modified_by || byVer[r.version].modified_by;
+      byVer[r.version].modified_by_role = r.modified_by_role || byVer[r.version].modified_by_role;
+    }
+    byVer[r.version].rowCount++;
+  });
+
+  // Sort: A00 first, then descending by number
+  const versions = Object.values(byVer);
+  versions.sort((a,b) => {
+    if (a.version === 'A00') return -1;
+    if (b.version === 'A00') return 1;
+    return b.version.localeCompare(a.version);
+  });
+  return versions;
+}
+
+/**
+ * Show history modal for given username+anio.
+ */
+async function openHistory(username, anio, displayName) {
+  const modal = document.getElementById('history-modal');
+  modal.style.display = 'flex';
+  document.getElementById('hist-title').textContent = `Historial · ${displayName} · ${anio}`;
+  document.getElementById('hist-list').innerHTML = '<div class="section-loading"><div class="mini-spinner-dark"></div> Cargando…</div>';
+  document.getElementById('hist-detail').innerHTML = '';
+
+  const versions = await loadVersionHistory(username, anio);
+  if (!versions.length) {
+    document.getElementById('hist-list').innerHTML = '<div class="empty-list">Sin historial registrado.</div>';
+    return;
+  }
+
+  document.getElementById('hist-list').innerHTML = versions.map((v,i) => {
+    const d = new Date(v.updated_at);
+    const dateStr = d.toLocaleString('es-CL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const isActive = v.version === 'A00';
+    const roleIcon = v.modified_by_role === 'admin' ? '👤 Admin' : v.modified_by_role === 'cliente' ? '👥 Cliente' : '—';
+    return `<div class="hist-item ${i===0?'selected':''}" onclick="showVersionDetail('${username}',${anio},'${v.version}',this)">
+      <div class="hist-ver">
+        <strong>${v.version}</strong>
+        ${isActive ? '<span class="hist-badge-active">ACTIVA</span>' : ''}
+      </div>
+      <div class="hist-meta">
+        <span>${dateStr}</span>
+        <span class="hist-author">${v.modified_by} <small>(${roleIcon})</small></span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Auto-load first version (the active A00)
+  if (versions.length) {
+    showVersionDetail(username, anio, versions[0].version, document.querySelector('.hist-item'));
+  }
+}
+
+async function showVersionDetail(username, anio, version, btn) {
+  document.querySelectorAll('.hist-item').forEach(el => el.classList.remove('selected'));
+  if (btn) btn.classList.add('selected');
+
+  const detail = document.getElementById('hist-detail');
+  detail.innerHTML = '<div class="section-loading"><div class="mini-spinner-dark"></div> Cargando valores…</div>';
+
+  const { data } = await sb.from('volumenes')
+    .select('id_lugar, id_producto, mes, valor')
+    .eq('username', username).eq('anio', anio).eq('version', version);
+
+  if (!data || !data.length) { detail.innerHTML = '<div class="empty-list">Sin datos.</div>'; return; }
+
+  // Group by lugar → producto → mes
+  const agg = {};
+  data.forEach(r => {
+    if (!agg[r.id_lugar]) agg[r.id_lugar] = {};
+    if (!agg[r.id_lugar][r.id_producto]) agg[r.id_lugar][r.id_producto] = {};
+    agg[r.id_lugar][r.id_producto][r.mes] = r.valor;
+  });
+
+  // Render all plants
+  const lugarIds = Object.keys(agg);
+  const html = lugarIds.map(lid => {
+    const plant = allPlants.find(p => String(p.ID_LUGAR_ENTREGA) === String(lid));
+    const plantName = plant ? plant.Lugar_Entrega : lid;
+    const productIds = Object.keys(agg[lid]);
+    const rows = productIds.map(pid => {
+      const prod = allProducts.find(p => String(p.ID_PRODUCTO) === String(pid));
+      const prodName = prod ? prod.Producto : pid;
+      const cells = MONTHS.map((_,mi) => {
+        const v = agg[lid][pid][mi];
+        return `<td style="text-align:right;padding:8px 10px">${v != null ? parseFloat(v).toLocaleString('es-CL') : '—'}</td>`;
+      }).join('');
+      return `<tr><td style="padding:8px 10px;font-weight:500;">${prodName}</td>${cells}</tr>`;
+    }).join('');
+    return `<div class="hist-plant-block">
+      <div class="hist-plant-title">${plantName}</div>
+      <div style="overflow-x:auto">
+        <table class="tol-table" style="font-size:12px">
+          <thead><tr><th>Producto</th>${MONTHS.map(m=>`<th style="text-align:right">${m}</th>`).join('')}</tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+
+  detail.innerHTML = html;
+}
+
+
+function openAdminHistory() {
+  if (selUsers.length !== 1) {
+    alert('Selecciona un único cliente para ver su historial.');
+    return;
+  }
+  const username = selUsers[0];
+  const user = allUsers.find(u => u.username === username);
+  const anio = parseInt(document.getElementById('adm-year').value);
+  openHistory(username, anio, user ? user.nombre : username);
+}
+
+function closeHistory() {
+  document.getElementById('history-modal').style.display = 'none';
+}
+
 
 // ═══════ INIT ═══════
 async function init() {
@@ -846,7 +1105,8 @@ async function renderTable() {
 
   const { data } = await sb.from('volumenes').select('id_producto, mes, valor')
     .eq('username', currentUser.username)
-    .eq('contrato', contrato).eq('anio', anio).eq('id_lugar', planta.ID_LUGAR_ENTREGA);
+    .eq('contrato', contrato).eq('anio', anio).eq('id_lugar', planta.ID_LUGAR_ENTREGA)
+    .eq('version', 'A00');
 
   volCache = {};
   (data||[]).forEach(r => {
@@ -900,27 +1160,32 @@ async function saveData() {
   const planta   = userPlants[currentPlantIdx];
   const contrato = document.getElementById('sel-contrato').value;
   const anio     = parseInt(document.getElementById('sel-year').value);
-  const rows = [];
+
+  // Build rows for the current (lugar × producto × mes) matrix
+  const rowsToUpsert = [];
   userProducts.forEach(prod => {
     MONTHS.forEach((_,mi) => {
       const val = volCache?.[prod.ID_PRODUCTO]?.[mi];
       if (val !== null && val !== undefined) {
-        rows.push({
+        rowsToUpsert.push({
           contrato, anio,
           id_lugar:    planta.ID_LUGAR_ENTREGA,
           id_producto: prod.ID_PRODUCTO,
-          mes: mi, valor: val,
+          mes: mi,
+          valor: val,
           username:   currentUser.username,
-          updated_at: new Date().toISOString()
         });
       }
     });
   });
-  let ok = true;
-  if (rows.length > 0) {
-    const { error } = await sb.from('volumenes').upsert(rows, { onConflict: 'username,contrato,anio,id_lugar,id_producto,mes' });
-    if (error) { ok=false; console.error(error); }
-  }
+
+  const ok = await versionedSave({
+    username: currentUser.username,
+    anio,
+    rows: rowsToUpsert,
+    modified_by: currentUser.username,
+    modified_by_role: 'cliente'
+  });
 
   // Si guardó correctamente, enviar correo
   if (ok && rows.length > 0) {
@@ -980,7 +1245,7 @@ function showAdminTab(tab) {
 
 async function loadAdminMasterData() {
   const [rU, rP, rPr] = await Promise.all([
-    sb.from('usuarios').select('username,nombre').eq('es_admin', false).order('nombre'),
+    sb.from('usuarios').select('username,nombre,segmentacion').eq('es_admin', false).order('nombre'),
     sb.from('plantas').select('*').order('orden'),
     sb.from('productos').select('*').order('orden'),
   ]);
@@ -1116,6 +1381,7 @@ async function renderAdminVolumes() {
   // Query volumenes
   let query = sb.from('volumenes').select('username, id_lugar, id_producto, mes, valor')
     .eq('contrato', contrato).eq('anio', anio)
+    .eq('version', 'A00')
     .in('username', selUsers)
     .in('id_lugar', selPlants)
     .in('id_producto', selProducts);
@@ -1273,7 +1539,7 @@ async function saveAdminData() {
 
   const contrato = 'C-2026-001';
   const anio     = parseInt(document.getElementById('adm-year').value);
-  const rows = [];
+  const rowsToUpsert = [];
   const selPlantsObj   = allPlants.filter(p => selPlants.includes(p.ID_LUGAR_ENTREGA));
   const selProductsObj = allProducts.filter(p => selProducts.includes(p.ID_PRODUCTO));
   selPlantsObj.forEach(planta => {
@@ -1281,22 +1547,27 @@ async function saveAdminData() {
       MONTHS.forEach((_,mi) => {
         const val = admVolCache?.[planta.ID_LUGAR_ENTREGA]?.[prod.ID_PRODUCTO]?.[mi];
         if (val !== null && val !== undefined) {
-          rows.push({
+          rowsToUpsert.push({
             contrato, anio,
             id_lugar:    planta.ID_LUGAR_ENTREGA,
             id_producto: prod.ID_PRODUCTO,
-            mes: mi, valor: val,
-            username, updated_at: new Date().toISOString()
+            mes: mi,
+            valor: val,
+            username,
           });
         }
       });
     });
   });
-  let ok = true;
-  if (rows.length > 0) {
-    const { error } = await sb.from('volumenes').upsert(rows, { onConflict: 'username,contrato,anio,id_lugar,id_producto,mes' });
-    if (error) { ok=false; console.error(error); }
-  }
+
+  const ok = await versionedSave({
+    username,
+    anio,
+    rows: rowsToUpsert,
+    modified_by: currentUser.username,
+    modified_by_role: 'admin'
+  });
+
   stTxt.textContent = ok ? '✓ Guardado correctamente' : '✗ Error al guardar';
   st.className = `save-status ${ok?'ok':'err'} show`;
   btn.disabled = false;
@@ -1311,7 +1582,7 @@ async function openAdminConfig() {
   const [rPl, rPr, rUs, rUPl, rUPr] = await Promise.all([
     sb.from('plantas').select('*').order('orden'),
     sb.from('productos').select('*').order('orden'),
-    sb.from('usuarios').select('username,nombre').eq('es_admin', false).order('nombre'),
+    sb.from('usuarios').select('username,nombre,segmentacion').eq('es_admin', false).order('nombre'),
     sb.from('usuario_plantas').select('username,id_lugar'),
     sb.from('usuario_productos').select('username,id_producto'),
   ]);
@@ -1538,6 +1809,7 @@ async function renderClientHubTable(hub) {
 
   const { data } = await sb.from('volumenes').select('id_producto,mes,valor,id_lugar')
     .eq('username', currentUser.username).eq('contrato', contrato).eq('anio', anio)
+    .eq('version', 'A00')
     .in('id_lugar', hubPlants.map(p => p.ID_LUGAR_ENTREGA));
 
   const agg = {};
