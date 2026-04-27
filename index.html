@@ -189,17 +189,16 @@
   .admin-nav-btn.active { background:var(--surface); color:var(--navy); font-weight:600; box-shadow:var(--shadow-sm); }
 
   /* ADMIN — VISTA VOLUMENES */
-  .adm-volumes-layout { display:flex; gap:12px; align-items:flex-start; }
+  .adm-volumes-layout { display:flex; gap:20px; align-items:flex-start; }
   .adm-table-area { flex:1; min-width:0; }
-  .adm-kpi-col { width:160px; flex-shrink:0; position:sticky; top:84px; }
-  .adm-filters-col { width:180px; flex-shrink:0; position:sticky; top:84px; }
+  .adm-sidebar { width:260px; flex-shrink:0; position:sticky; top:84px; }
 
   .admin-filter-bar {
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:16px 18px; margin-bottom:16px;
   }
-  .filter-title { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; font-weight:600; }
-  .filter-row { display:flex; flex-direction:column; gap:10px; }
+  .filter-title { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; font-weight:600; }
+  .filter-row { display:flex; flex-direction:column; gap:14px; }
   .filter-col { flex:1; }
   .filter-col label { display:block; font-size:11px; color:var(--text-2); font-weight:600; margin-bottom:5px; }
 
@@ -215,7 +214,7 @@
 
   .multi-select-btn {
     width:100%; background:var(--bg); border:1px solid var(--border-strong); border-radius:var(--radius);
-    padding:7px 10px; text-align:left; font-family:inherit; font-size:12px; color:var(--text);
+    padding:10px 14px; text-align:left; font-family:inherit; font-size:14px; color:var(--text);
     cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:space-between;
   }
   .multi-select-btn:hover { border-color:var(--navy); }
@@ -282,21 +281,20 @@
   .tol-sign.minus { background:rgba(178,58,72,.12); color:var(--danger); }
 
   /* Admin volumes layout */
-  .adm-volumes-layout { display:flex; gap:12px; align-items:flex-start; }
+  .adm-volumes-layout { display:flex; gap:20px; align-items:flex-start; }
   .adm-table-area { flex:1; min-width:0; }
-  .adm-kpi-col { width:160px; flex-shrink:0; position:sticky; top:84px; }
-  .adm-filters-col { width:180px; flex-shrink:0; position:sticky; top:84px; display:flex; flex-direction:column; gap:10px; }
-  .admin-filter-bar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:10px 12px; margin-bottom:0; }
-  .filter-row { display:flex; flex-direction:column; gap:10px; }
+  .adm-sidebar { width:260px; flex-shrink:0; position:sticky; top:84px; display:flex; flex-direction:column; gap:16px; }
+  .admin-filter-bar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:0; }
+  .filter-row { display:flex; flex-direction:column; gap:14px; }
   .filter-col { flex:1; min-width:unset; }
-  .filter-col label { display:block; font-size:10px; color:var(--text-2); font-weight:600; margin-bottom:4px; }
-  .kpi-sidebar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:10px 12px; }
-  .kpi-sidebar-title { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; font-weight:600; }
-  .kpi-item { padding:7px 0; border-bottom:1px solid var(--border); }
+  .filter-col label { display:block; font-size:11px; color:var(--text-2); font-weight:600; margin-bottom:5px; }
+  .kpi-sidebar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
+  .kpi-sidebar-title { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; font-weight:600; }
+  .kpi-item { padding:10px 0; border-bottom:1px solid var(--border); }
   .kpi-item:last-child { border-bottom:none; padding-bottom:0; }
-  .kpi-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
-  .kpi-value { font-family:'Instrument Serif', serif; font-size:17px; color:var(--navy); line-height:1; }
-  .kpi-unit { font-size:10px; color:var(--muted); margin-top:2px; }
+  .kpi-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+  .kpi-value { font-family:'Instrument Serif', serif; font-size:22px; color:var(--navy); line-height:1; }
+  .kpi-unit { font-size:11px; color:var(--muted); margin-top:2px; }
   .summary-strip { display:none !important; }
   #adm-summary-strip { display:none !important; }
 
@@ -348,7 +346,32 @@
   .empty-state h3 { font-family:'Instrument Serif', serif; font-size:22px; color:var(--navy); margin-bottom:4px; }
   .empty-state p { font-size:14px; }
 
-  /* History modal */
+  /* ═══════ CUMPLIMIENTO ═══════ */
+  .cump-filter-bar { display:flex; gap:24px; padding:16px 20px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:20px; flex-wrap:wrap; }
+  .cump-filter-group { display:flex; flex-direction:column; gap:4px; }
+  .cump-filter-group label { font-size:11px; color:var(--text-2); font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+  .cump-filter-group select { background:var(--bg); border:1px solid var(--border-strong); border-radius:6px; padding:8px 12px; font-family:inherit; font-size:13px; color:var(--text); cursor:pointer; min-width:160px; outline:none; transition:border .15s; }
+  .cump-filter-group select:focus { border-color:var(--enap-teal); }
+
+  .cump-block { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:24px; overflow:hidden; }
+  .cump-block-header { padding:16px 20px; background:var(--surface2); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .cump-block-title { font-family:'Instrument Serif', serif; font-size:18px; color:var(--enap-navy); }
+  .cump-block-sub { font-size:12px; color:var(--muted); }
+  .cump-table { width:100%; border-collapse:collapse; }
+  .cump-table th { background:var(--enap-navy); color:#fff; padding:12px 18px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; text-align:left; }
+  .cump-table th:not(:first-child) { text-align:right; }
+  .cump-table td { padding:14px 18px; border-bottom:1px solid var(--border); font-size:14px; color:var(--text); }
+  .cump-table td:first-child { font-weight:500; }
+  .cump-table td:not(:first-child) { text-align:right; font-variant-numeric:tabular-nums; }
+  .cump-table tr:last-child td { border-bottom:none; }
+  .cump-table tr.cump-total td { background:var(--surface2); font-weight:700; color:var(--enap-navy); }
+  .cump-pct { display:inline-block; padding:4px 10px; border-radius:99px; font-size:12px; font-weight:600; min-width:60px; text-align:center; }
+  .cump-pct.low  { background:rgba(213,0,50,.10);  color:var(--enap-red); }
+  .cump-pct.mid  { background:rgba(200,155,60,.15); color:#a07a1f; }
+  .cump-pct.high { background:rgba(46,125,91,.12);  color:var(--success); }
+  .cump-pct.over { background:rgba(2,75,148,.10);  color:var(--enap-navy); }
+
+
   .history-modal-bg { position:fixed; inset:0; background:rgba(15,30,60,.55); z-index:1000; display:none; align-items:center; justify-content:center; padding:40px; backdrop-filter: blur(4px); }
   .history-modal { background:var(--surface); border-radius:12px; width:95%; max-width:1200px; max-height:90vh; display:flex; flex-direction:column; box-shadow:var(--shadow-lg); overflow:hidden; }
   .history-head { padding:18px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--surface2); }
@@ -370,26 +393,6 @@
   .hist-plant-title { font-size:13px; font-weight:700; color:var(--enap-navy); margin-bottom:8px; letter-spacing:.02em; }
   .btn-history { background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius); padding:11px 18px; font-family:inherit; font-size:13px; font-weight:600; color:var(--text-2); cursor:pointer; display:flex; align-items:center; gap:8px; transition:all .15s; }
   .btn-history:hover { border-color:var(--enap-teal); color:var(--enap-teal); }
-
-  /* ─── CONFIRM MODAL ─── */
-  .confirm-modal-bg { position:fixed; inset:0; background:rgba(15,30,60,.6); z-index:2000; display:none; align-items:center; justify-content:center; padding:24px; backdrop-filter:blur(4px); }
-  .confirm-modal-bg.open { display:flex; }
-  .confirm-modal { background:var(--surface); border-radius:14px; width:100%; max-width:480px; box-shadow:var(--shadow-lg); overflow:hidden; }
-  .confirm-modal-head { padding:20px 24px 0; display:flex; align-items:center; gap:12px; }
-  .confirm-modal-icon { width:40px; height:40px; border-radius:50%; background:rgba(0,160,154,.12); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .confirm-modal-title { font-family:'Instrument Serif', serif; font-size:22px; color:var(--navy); letter-spacing:-.01em; }
-  .confirm-modal-body { padding:14px 24px 20px; color:var(--text-2); font-size:14px; line-height:1.6; }
-  .confirm-modal-body strong { color:var(--text); }
-  .confirm-modal-summary { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-top:12px; font-size:13px; }
-  .confirm-modal-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border); }
-  .confirm-modal-row:last-child { border-bottom:none; }
-  .confirm-modal-row span { color:var(--muted); }
-  .confirm-modal-row strong { color:var(--navy); }
-  .confirm-modal-footer { padding:16px 24px; display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border); background:var(--surface2); }
-  .btn-confirm-cancel { background:none; border:1px solid var(--border-strong); border-radius:var(--radius); padding:11px 20px; font-family:inherit; font-size:14px; font-weight:500; color:var(--text-2); cursor:pointer; transition:all .15s; }
-  .btn-confirm-cancel:hover { border-color:var(--danger); color:var(--danger); }
-  .btn-confirm-ok { background:var(--navy); color:#fff; border:none; border-radius:var(--radius); padding:11px 22px; font-family:inherit; font-size:14px; font-weight:600; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:8px; }
-  .btn-confirm-ok:hover { background:var(--navy-soft); transform:translateY(-1px); }
 </style>
 </head>
 <body>
@@ -397,29 +400,6 @@
 <div id="global-loader">
   <div class="spinner"></div>
   <div class="loader-text">Conectando con la base de datos…</div>
-</div>
-
-<!-- ═══════════ MODAL CONFIRMACIÓN GUARDAR ═══════════ -->
-<div class="confirm-modal-bg" id="confirm-modal-bg">
-  <div class="confirm-modal">
-    <div class="confirm-modal-head">
-      <div class="confirm-modal-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--enap-teal)" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      </div>
-      <div class="confirm-modal-title">Confirmar guardado</div>
-    </div>
-    <div class="confirm-modal-body">
-      <p>Por favor revisa los datos antes de confirmar el guardado:</p>
-      <div class="confirm-modal-summary" id="confirm-modal-summary"></div>
-    </div>
-    <div class="confirm-modal-footer">
-      <button class="btn-confirm-cancel" onclick="closeConfirmModal()">Cancelar</button>
-      <button class="btn-confirm-ok" id="btn-confirm-ok" onclick="confirmSaveData()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        Confirmar y guardar
-      </button>
-    </div>
-  </div>
 </div>
 
 <!-- ═══════════ LOGIN ═══════════ -->
@@ -431,7 +411,7 @@
     <div class="login-title">Portal Clientes</div>
     <div class="login-subtitle">Accede con tu RUT y contraseña para cargar tus volúmenes mensuales.</div>
     <div class="field-label">RUT / Usuario</div>
-    <input class="field-input" id="inp-user" type="text" placeholder="Ej: 12345678K" autocomplete="username" oninput="this.value=this.value.replace(/[.\-]/g,'')" onkeydown="if(event.key==='.'||event.key==='-')event.preventDefault()">
+    <input class="field-input" id="inp-user" type="text" placeholder="Ej: 760783137" autocomplete="username">
     <div class="field-label">Contraseña</div>
     <input class="field-input" id="inp-pass" type="password" placeholder="••••••••">
     <div class="error-msg" id="login-error"></div>
@@ -458,7 +438,11 @@
   </nav>
 
   <div class="nav-tabs">
-    <button class="nav-tab active" id="nav-data" onclick="showSection('data')">
+    <button class="nav-tab active" id="nav-cumplimiento" onclick="showSection('cumplimiento')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Cumplimiento Mensual
+    </button>
+    <button class="nav-tab" id="nav-data" onclick="showSection('data')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
       Volúmenes
     </button>
@@ -468,8 +452,42 @@
     </button>
   </div>
 
+  <!-- ─── VISTA CLIENTE · CUMPLIMIENTO ─── -->
+  <div id="cumplimiento-screen">
+    <div class="client-main">
+      <div class="welcome-block">
+        <div class="welcome-title">Cumplimiento mensual</div>
+        <div class="welcome-sub">Revisa el avance de tus retiros respecto al volumen comprometido.</div>
+      </div>
+
+      <div class="cump-filter-bar">
+        <div class="cump-filter-group">
+          <label>Año</label>
+          <select id="cump-year" onchange="renderCumplimiento()">
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+          </select>
+        </div>
+        <div class="cump-filter-group">
+          <label>Mes</label>
+          <select id="cump-month" onchange="renderCumplimiento()"></select>
+        </div>
+        <div class="cump-filter-group">
+          <label>Hub</label>
+          <select id="cump-hub" onchange="renderCumplimiento()">
+            <option value="aconcagua">Hub Aconcagua</option>
+            <option value="sanvicente">Hub San Vicente</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="cump-table-wrap"></div>
+    </div>
+  </div>
+
   <!-- ─── VISTA CLIENTE ─── -->
-  <div id="data-screen">
+  <div id="data-screen" style="display:none">
     <div class="client-main">
       <div class="welcome-block">
         <div class="welcome-title" id="welcome-title">Bienvenido</div>
@@ -511,7 +529,15 @@
 
       <div class="plant-tabs" id="plant-tabs"></div>
       <div class="table-wrapper">
-        <table><thead id="table-head"></thead><tbody id="table-body"></tbody></table>
+        <table style="table-layout:fixed; width:100%;">
+          <colgroup>
+            <col style="width:14%">
+            <col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%">
+            <col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%">
+            <col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%">
+          </colgroup>
+          <thead id="table-head"></thead><tbody id="table-body"></tbody>
+        </table>
       </div>
       <div class="summary-strip" id="summary-strip"></div>
     </div>
@@ -534,14 +560,7 @@
       <!-- ADMIN · VOLÚMENES -->
       <div id="adm-volumes">
         <div class="adm-volumes-layout">
-          <!-- KPIs (izquierda) -->
-          <div class="adm-kpi-col">
-            <div class="kpi-sidebar" id="adm-kpi-sidebar" style="display:none">
-              <div class="kpi-sidebar-title">Resumen</div>
-              <div id="adm-kpi-items"></div>
-            </div>
-          </div>
-          <!-- Tabla principal (centro) -->
+          <!-- Tabla principal -->
           <div class="adm-table-area">
             <div id="aggregate-banner" class="aggregate-banner" style="display:none">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -566,14 +585,11 @@
                 </button>
               </div>
             </div>
-            <div class="hub-btns">
-              <button class="hub-btn" id="hub-btn-aconcagua" onclick="selectHub('aconcagua')">Hub Aconcagua</button>
-              <button class="hub-btn" id="hub-btn-sanvicente" onclick="selectHub('sanvicente')">Hub San Vicente</button>
-            </div>
+            <div class="hub-btns" id="admin-hub-btns"></div>
             <div id="admin-volumes-view"></div>
           </div>
-          <!-- Filtros (derecha) -->
-          <div class="adm-filters-col">
+          <!-- Sidebar -->
+          <div class="adm-sidebar">
             <div class="admin-filter-bar">
               <div class="filter-title">Filtros</div>
               <div class="filter-row">
@@ -638,6 +654,10 @@
                   <div class="filter-chips" id="chips-products"></div>
                 </div>
               </div>
+            </div>
+            <div class="kpi-sidebar" id="adm-kpi-sidebar" style="display:none">
+              <div class="kpi-sidebar-title">Resumen</div>
+              <div id="adm-kpi-items"></div>
             </div>
           </div>
         </div>
@@ -808,8 +828,10 @@ let currentPlantIdx  = 0;
 let userPlants       = [];
 let userProducts     = [];
 let volCache         = {};
-let originalCache    = {};   // valores al cargar desde BD
-let dirtyCache       = {};   // solo celdas modificadas por el usuario
+let hubOtherData     = {};
+let currentHubPlant  = null;
+let currentHubLabel  = '';
+let currentHubPlants = [];
 
 // admin config
 let draftPlants = [], draftProducts = [];
@@ -1110,7 +1132,14 @@ async function doLogin() {
   document.getElementById('user-name-display').textContent = data.nombre;
   document.getElementById('user-avatar').textContent = data.nombre[0].toUpperCase();
   document.getElementById('welcome-title').textContent = `Bienvenido, ${data.nombre}`;
-  if (data.es_admin) document.getElementById('nav-admin').style.display = 'flex';
+  if (data.es_admin) {
+    document.getElementById('nav-admin').style.display = 'flex';
+    document.getElementById('nav-cumplimiento').style.display = 'none';
+    document.getElementById('nav-data').style.display = 'none';
+  } else {
+    document.getElementById('nav-cumplimiento').style.display = 'flex';
+    document.getElementById('nav-data').style.display = 'flex';
+  }
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display   = 'block';
   btn.disabled = false; btn.textContent = 'Ingresar';
@@ -1120,7 +1149,7 @@ async function doLogin() {
     showSection('admin');
   } else {
     await loadUserConfig();
-    showSection('data');
+    showSection('cumplimiento');
   }
 }
 document.getElementById('inp-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
@@ -1148,14 +1177,190 @@ async function loadUserConfig() {
 
 // ═══════ NAV ═══════
 function showSection(s) {
+  document.getElementById('cumplimiento-screen').style.display = s==='cumplimiento' ? 'block' : 'none';
   document.getElementById('data-screen').style.display  = s==='data'  ? 'block' : 'none';
   document.getElementById('admin-screen').style.display = s==='admin' ? 'block' : 'none';
+  document.getElementById('nav-cumplimiento').classList.toggle('active', s==='cumplimiento');
   document.getElementById('nav-data').classList.toggle('active',  s==='data');
   document.getElementById('nav-admin').classList.toggle('active', s==='admin');
+  if (s==='cumplimiento') { initCumplimiento(); }
   if (s==='data')  { currentPlantIdx=0; buildTabs(); renderTable(); }
   if (s==='admin') { initAdminVolumes(); }
 }
 function onContextChange() { currentPlantIdx=0; volCache={}; buildTabs(); renderTable(); }
+
+// ═══════════════════════════════════════════════════════
+//   CUMPLIMIENTO MENSUAL
+// ═══════════════════════════════════════════════════════
+
+// Categorías de productos: agrupa productos por nombre (case-insensitive contains)
+const PRODUCT_CATEGORIES = [
+  { label: 'Diesel',    matchers: ['diesel', 'diésel'] },
+  { label: 'Gasolinas', matchers: ['gasolina'] },
+  { label: 'Kerosene',  matchers: ['kerosene', 'queroseno', 'parafina'] },
+];
+
+function categorizeProduct(prodName) {
+  if (!prodName) return null;
+  const n = prodName.toLowerCase();
+  for (const cat of PRODUCT_CATEGORIES) {
+    if (cat.matchers.some(m => n.includes(m))) return cat.label;
+  }
+  return null;
+}
+
+async function initCumplimiento() {
+  // Build month dropdown if empty
+  const monthSel = document.getElementById('cump-month');
+  if (!monthSel.options.length) {
+    const monthsLong = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const currentMonth = new Date().getMonth();   // 0..11
+    monthSel.innerHTML = monthsLong.map((m,i) =>
+      `<option value="${i}" ${i===currentMonth?'selected':''}>${m}</option>`
+    ).join('');
+  }
+
+  // Filter hub options to only those the client has plants in
+  const hubSel = document.getElementById('cump-hub');
+  const labels = { aconcagua: 'Hub Aconcagua', sanvicente: 'Hub San Vicente' };
+  const availableHubs = Object.keys(HUB_DEFS).filter(hubKey => {
+    const names = HUB_DEFS[hubKey];
+    return userPlants.some(p => names.some(n => p.Lugar_Entrega.toLowerCase().includes(n.toLowerCase())));
+  });
+  if (availableHubs.length) {
+    const prevValue = hubSel.value;
+    hubSel.innerHTML = availableHubs.map(k => `<option value="${k}">${labels[k]}</option>`).join('');
+    if (availableHubs.includes(prevValue)) hubSel.value = prevValue;
+  } else {
+    hubSel.innerHTML = '<option value="">Sin hubs disponibles</option>';
+  }
+
+  renderCumplimiento();
+}
+
+async function renderCumplimiento() {
+  const wrap = document.getElementById('cump-table-wrap');
+  const anio = parseInt(document.getElementById('cump-year').value);
+  const mesIdx = parseInt(document.getElementById('cump-month').value);   // 0..11
+  const hubKey = document.getElementById('cump-hub').value;
+
+  if (!hubKey) {
+    wrap.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted)">No tienes hubs asignados.</div>`;
+    return;
+  }
+
+  wrap.innerHTML = `<div class="section-loading"><div class="mini-spinner-dark"></div> Calculando cumplimiento…</div>`;
+
+  // Find the plants the client has in this hub
+  const hubNames = HUB_DEFS[hubKey];
+  const hubPlants = userPlants.filter(p =>
+    hubNames.some(n => p.Lugar_Entrega.toLowerCase().includes(n.toLowerCase()))
+  );
+  if (!hubPlants.length) {
+    wrap.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted)">No tienes plantas asignadas en este hub.</div>`;
+    return;
+  }
+  const hubPlantIds = hubPlants.map(p => p.ID_LUGAR_ENTREGA);
+
+  // 1) Fetch volúmenes (VMC) for this user / year / month / hub plants — only A00 active version
+  // Note: in volumenes table, mes is 0..11 (index-based)
+  const { data: volData, error: volErr } = await sb.from('volumenes')
+    .select('id_producto, mes, valor, id_lugar')
+    .eq('username', currentUser.username)
+    .eq('anio', anio)
+    .eq('version', 'A00')
+    .eq('mes', mesIdx)
+    .in('id_lugar', hubPlantIds);
+  if (volErr) { console.error(volErr); wrap.innerHTML = `<div style="padding:40px;color:var(--enap-red)">Error al consultar volúmenes.</div>`; return; }
+
+  // 2) Fetch ventas (Retiros) for the same key
+  // Try cruzando por id_cliente=username; mes en ventas puede ser 1..12 o 0..11.
+  // 2) Retiros: tabla "Ventas" (mayúscula). Periodo es 1..12. Sumamos por producto.
+  // El "mes" en volúmenes es 0..11 → en Ventas equivale a mesIdx + 1
+  const periodoVentas = mesIdx + 1;
+  const { data: ventasData, error: ventasErr } = await sb.from('Ventas')
+    .select('"ID_PRODUCTO", "Periodo", "Cant_UM_VTA", "ID_LUGAR_ENTREGA", "Ejercicio", "ID_CLIENTE"')
+    .eq('ID_CLIENTE', currentUser.username)
+    .eq('Ejercicio', anio)
+    .eq('Periodo', periodoVentas)
+    .in('ID_LUGAR_ENTREGA', hubPlantIds);
+  if (ventasErr) {
+    console.warn('Ventas query error:', ventasErr);
+  }
+
+  // Aggregate VMC and Retiros by product
+  const vmcByProd = {};
+  (volData || []).forEach(r => {
+    vmcByProd[r.id_producto] = (vmcByProd[r.id_producto] || 0) + (parseFloat(r.valor) || 0);
+  });
+  const retByProd = {};
+  (ventasData || []).forEach(r => {
+    // Cant_UM_VTA puede venir negativo (egreso de bodega) → tomamos valor absoluto
+    const qty = Math.abs(parseFloat(r.Cant_UM_VTA) || 0);
+    const pid = r.ID_PRODUCTO;
+    retByProd[pid] = (retByProd[pid] || 0) + qty;
+  });
+
+  // Group totals by category
+  const catTotals = {};
+  PRODUCT_CATEGORIES.forEach(c => { catTotals[c.label] = { vmc: 0, ret: 0 }; });
+
+  userProducts.forEach(prod => {
+    const cat = categorizeProduct(prod.Producto);
+    if (!cat) return;
+    catTotals[cat].vmc += vmcByProd[prod.ID_PRODUCTO] || 0;
+    catTotals[cat].ret += retByProd[prod.ID_PRODUCTO] || 0;
+  });
+
+  // Render table
+  let totalVMC = 0, totalRet = 0;
+  const rows = PRODUCT_CATEGORIES.map(c => {
+    const { vmc, ret } = catTotals[c.label];
+    totalVMC += vmc; totalRet += ret;
+    return rowHtml(c.label, vmc, ret);
+  }).join('');
+  const totalRow = rowHtml('Total', totalVMC, totalRet, true);
+
+  const monthsLong = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const hubLabel = hubKey === 'aconcagua' ? 'Hub Aconcagua' : 'Hub San Vicente';
+
+  wrap.innerHTML = `
+    <div class="cump-block">
+      <div class="cump-block-header">
+        <div>
+          <div class="cump-block-title">${hubLabel} · ${monthsLong[mesIdx]} ${anio}</div>
+          <div class="cump-block-sub">Cifras expresadas en m³ · ${hubPlants.map(p=>p.Lugar_Entrega).join(' + ')}</div>
+        </div>
+      </div>
+      <table class="cump-table">
+        <thead>
+          <tr><th>Producto</th><th>VMC</th><th>Retiros</th><th>% Avance</th></tr>
+        </thead>
+        <tbody>
+          ${rows}
+          ${totalRow}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function rowHtml(label, vmc, ret, isTotal) {
+  const pct = vmc > 0 ? (ret / vmc) * 100 : null;
+  const pctText = pct === null ? '—' : `${pct.toFixed(1)}%`;
+  let pctClass = 'low';
+  if (pct === null)            pctClass = 'low';
+  else if (pct >= 100)         pctClass = 'over';
+  else if (pct >= 80)          pctClass = 'high';
+  else if (pct >= 50)          pctClass = 'mid';
+  return `<tr${isTotal?' class="cump-total"':''}>
+    <td>${label}</td>
+    <td>${vmc ? vmc.toLocaleString('es-CL') : '—'}</td>
+    <td>${ret ? ret.toLocaleString('es-CL') : '—'}</td>
+    <td><span class="cump-pct ${pctClass}">${pctText}</span></td>
+  </tr>`;
+}
+
 
 // ═══════ CLIENTE ─ TABLA ═══════
 function buildTabs() {
@@ -1166,7 +1371,13 @@ function buildTabs() {
       `<button class="tab-btn ${i===currentPlantIdx?'active':''}" onclick="selectPlant(${i})">${p.Lugar_Entrega}</button>`
     ).join('');
 }
-function selectPlant(i) { currentPlantIdx=i; buildTabs(); renderTable(); }
+function selectPlant(i) {
+  currentPlantIdx = i;
+  activeClientHub = null;
+  volCache = {};
+  buildTabs();
+  renderTable();
+}
 
 async function renderTable() {
   if (!userPlants.length) {
@@ -1198,9 +1409,6 @@ async function renderTable() {
     if (!volCache[r.id_producto]) volCache[r.id_producto] = {};
     volCache[r.id_producto][r.mes] = r.valor;
   });
-  // Snapshot del estado guardado para detectar cambios
-  originalCache = JSON.parse(JSON.stringify(volCache));
-  dirtyCache = {};
 
   const tbody = document.getElementById('table-body');
   tbody.innerHTML = '';
@@ -1221,43 +1429,139 @@ async function renderTable() {
   trTot.innerHTML = `<td>Total mensual</td>${totals.map(t=>`<td>${t?t.toLocaleString('es-CL'):'—'}</td>`).join('')}`;
   tbody.appendChild(trTot);
   renderSummary();
+  await renderHubTotalForPlant(planta, contrato, anio);
+}
+
+// Determines if `planta` belongs to a hub. If yes, and if the client has more than one plant
+// in that hub, renders an additional read-only table below showing the hub's totals.
+async function renderHubTotalForPlant(planta, contrato, anio) {
+  let container = document.getElementById('hub-total-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'hub-total-container';
+    container.style.marginTop = '24px';
+    const tableEl = document.querySelector('.data-table-wrap') || document.getElementById('table-body').closest('table').parentNode;
+    tableEl.parentNode.insertBefore(container, tableEl.nextSibling);
+  }
+  container.innerHTML = '';
+  hubOtherData = {};
+  currentHubPlant = null;
+
+  // find hub for this plant
+  const hubKey = Object.keys(HUB_DEFS).find(k =>
+    HUB_DEFS[k].some(n => planta.Lugar_Entrega.toLowerCase().includes(n.toLowerCase()))
+  );
+  if (!hubKey) return;
+
+  const names = HUB_DEFS[hubKey];
+  const hubPlants = userPlants.filter(p => names.some(n => p.Lugar_Entrega.toLowerCase().includes(n.toLowerCase())));
+  if (hubPlants.length < 2) return;  // no point in showing hub total if only 1 plant
+
+  const hubLabel = hubKey === 'aconcagua' ? 'Hub Aconcagua' : 'Hub San Vicente';
+  const otherPlantIds = hubPlants
+    .filter(p => p.ID_LUGAR_ENTREGA !== planta.ID_LUGAR_ENTREGA)
+    .map(p => p.ID_LUGAR_ENTREGA);
+
+  // Fetch other plants' data (current plant comes from volCache which is being edited)
+  let otherData = [];
+  if (otherPlantIds.length) {
+    const { data } = await sb.from('volumenes')
+      .select('id_producto, mes, valor, id_lugar')
+      .eq('username', currentUser.username)
+      .eq('contrato', contrato).eq('anio', anio)
+      .eq('version', 'A00')
+      .in('id_lugar', otherPlantIds);
+    otherData = data || [];
+  }
+
+  // Aggregate other plants: producto -> mes -> total
+  hubOtherData = {};
+  otherData.forEach(r => {
+    if (!hubOtherData[r.id_producto]) hubOtherData[r.id_producto] = {};
+    hubOtherData[r.id_producto][r.mes] = (hubOtherData[r.id_producto][r.mes] || 0) + (parseFloat(r.valor) || 0);
+  });
+  currentHubPlant = planta;
+  currentHubLabel = hubLabel;
+  currentHubPlants = hubPlants;
+
+  buildHubTotalTable();
+}
+
+// Build the hub-total table from current state (other plants + volCache for current plant)
+function buildHubTotalTable() {
+  const container = document.getElementById('hub-total-container');
+  if (!container || !currentHubPlant) return;
+
+  // Sum: hubOtherData (other plants) + volCache (current plant being edited)
+  const agg = {};
+  userProducts.forEach(prod => {
+    agg[prod.ID_PRODUCTO] = {};
+    MONTHS.forEach((_, mi) => {
+      const other = hubOtherData?.[prod.ID_PRODUCTO]?.[mi] || 0;
+      const cur = parseFloat(volCache?.[prod.ID_PRODUCTO]?.[mi]) || 0;
+      agg[prod.ID_PRODUCTO][mi] = other + cur;
+    });
+  });
+
+  // Use same column proportions as main table: first col 1.5fr, then 12 equal months
+  const colgroup = `<colgroup><col style="width:14%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"></colgroup>`;
+
+  const headerRow = `<tr><th style="text-align:left;padding:14px">${currentHubLabel} (Total)</th>${MONTHS.map(m=>`<th style="text-align:right;padding:14px">${m}</th>`).join('')}</tr>`;
+  const bodyRows = userProducts.map(prod => {
+    const cells = MONTHS.map((_, mi) => {
+      const v = agg?.[prod.ID_PRODUCTO]?.[mi] || 0;
+      return `<td style="text-align:right;padding:14px;font-weight:${v?600:400};color:${v?'var(--enap-navy)':'var(--muted)'}">${v?v.toLocaleString('es-CL'):'—'}</td>`;
+    }).join('');
+    return `<tr><td style="font-weight:500;padding:14px">${prod.Producto}</td>${cells}</tr>`;
+  }).join('');
+  const totalsHub = MONTHS.map((_,mi) => userProducts.reduce((s,pr) => s+(parseFloat(agg?.[pr.ID_PRODUCTO]?.[mi])||0), 0));
+  const totalRow = `<tr class="totals-row"><td style="padding:14px">Total mensual</td>${totalsHub.map(t=>`<td style="padding:14px;text-align:right">${t?t.toLocaleString('es-CL'):'—'}</td>`).join('')}</tr>`;
+
+  container.innerHTML = `
+    <div style="font-family:'Instrument Serif', serif; font-size:18px; color:var(--enap-navy); margin-bottom:8px;">
+      Total ${currentHubLabel}
+      <span style="font-family:'Inter',sans-serif; font-size:12px; color:var(--muted); font-weight:400; margin-left:8px;">(${currentHubPlants.map(p=>p.Lugar_Entrega).join(' + ')})</span>
+    </div>
+    <div class="data-table-wrap" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;">
+      <table class="data-table" style="width:100%; border-collapse:collapse; table-layout:fixed;">
+        ${colgroup}
+        <thead>${headerRow}</thead>
+        <tbody>${bodyRows}${totalRow}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 function onCell(inp) {
   const { pid, mi } = inp.dataset;
-  const miInt = parseInt(mi);
   const val = inp.value !== '' ? parseFloat(inp.value) : null;
   if (!volCache[pid]) volCache[pid] = {};
-  volCache[pid][miInt] = val;
+  volCache[pid][parseInt(mi)] = val;
   inp.closest('td').classList.toggle('has-value', val !== null);
-
-  // Registrar si el valor es diferente al original
-  const originalVal = originalCache?.[pid]?.[miInt] ?? null;
-  const originalNum = originalVal !== null ? parseFloat(originalVal) : null;
-  const isDirty = val !== originalNum;
-  if (!dirtyCache[pid]) dirtyCache[pid] = {};
-  if (isDirty) {
-    dirtyCache[pid][miInt] = { nuevo: val, anterior: originalNum };
-  } else {
-    delete dirtyCache[pid][miInt];
-    if (Object.keys(dirtyCache[pid]).length === 0) delete dirtyCache[pid];
-  }
-
   const totals = MONTHS.map((_,mi) =>
     userProducts.reduce((s,pr) => s+(parseFloat(volCache?.[pr.ID_PRODUCTO]?.[mi])||0), 0)
   );
-  document.querySelectorAll('.totals-row td').forEach((td,i) => {
+  // Update only the main table totals row (scope by ancestor #table-body)
+  document.querySelectorAll('#table-body .totals-row td').forEach((td,i) => {
     if (i>0) td.textContent = totals[i-1] ? totals[i-1].toLocaleString('es-CL') : '—';
   });
+  // Refresh hub total table in case this plant belongs to a multi-plant hub
+  if (currentHubPlant) buildHubTotalTable();
   renderSummary();
 }
 
 async function saveData() {
+  const btn = document.getElementById('btn-guardar');
+  const st  = document.getElementById('save-status');
+  const stTxt = document.getElementById('save-status-text');
+  btn.disabled = true;
+  stTxt.textContent = 'Guardando…'; st.className = 'save-status show';
+
   const planta   = userPlants[currentPlantIdx];
   const contrato = document.getElementById('sel-contrato').value;
   const anio     = parseInt(document.getElementById('sel-year').value);
 
-  // Filas completas a guardar (todo lo que tiene valor)
+  // Build rows for the current (lugar × producto × mes) matrix
   const rowsToUpsert = [];
   userProducts.forEach(prod => {
     MONTHS.forEach((_,mi) => {
@@ -1269,76 +1573,11 @@ async function saveData() {
           id_producto: prod.ID_PRODUCTO,
           mes: mi,
           valor: val,
-          username: currentUser.username,
+          username:   currentUser.username,
         });
       }
     });
   });
-
-  // Cambios para mostrar en confirmación (solo lo modificado)
-  const MONTH_NAMES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const changedRows = [];
-  Object.entries(dirtyCache).forEach(([pid, meses]) => {
-    const prod = userProducts.find(p => String(p.ID_PRODUCTO) === String(pid));
-    Object.entries(meses).forEach(([mi, {nuevo, anterior}]) => {
-      changedRows.push({ prod, mi: parseInt(mi), nuevo, anterior });
-    });
-  });
-
-  // Si no hay cambios, avisar y no guardar
-  if (changedRows.length === 0) {
-    const st = document.getElementById('save-status');
-    const stTxt = document.getElementById('save-status-text');
-    stTxt.textContent = 'Sin cambios para guardar.';
-    st.className = 'save-status show ok';
-    setTimeout(() => { st.className = 'save-status'; }, 3000);
-    return;
-  }
-
-  // Construir resumen del modal con SOLO los cambios
-  let html = `<div class="confirm-modal-row"><span>Lugar</span><strong>${planta.Lugar_Entrega}</strong></div>`;
-  html    += `<div class="confirm-modal-row"><span>Contrato</span><strong>${contrato}</strong></div>`;
-  html    += `<div class="confirm-modal-row"><span>Año</span><strong>${anio}</strong></div>`;
-  html    += `<div class="confirm-modal-row"><span>Cambios</span><strong>${changedRows.length} ${changedRows.length === 1 ? 'celda' : 'celdas'}</strong></div>`;
-  html    += `<div style="height:6px"></div>`;
-
-  changedRows.forEach(({ prod, mi, nuevo, anterior }) => {
-    const label = `${prod?.Producto || '—'} · ${MONTH_NAMES[mi]}`;
-    const anteriorTxt = anterior !== null ? anterior.toLocaleString('es-CL') : '—';
-    const nuevoTxt    = nuevo    !== null ? nuevo.toLocaleString('es-CL')    : '— (borrado)';
-    html += `<div class="confirm-modal-row">
-      <span>${label}</span>
-      <strong style="display:flex;align-items:center;gap:6px">
-        <span style="color:var(--muted);font-weight:400;font-size:11px">${anteriorTxt}</span>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--enap-teal)" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
-        <span style="color:var(--navy)">${nuevoTxt}</span>
-      </strong>
-    </div>`;
-  });
-
-  document.getElementById('confirm-modal-summary').innerHTML = html;
-  document.getElementById('confirm-modal-bg').classList.add('open');
-  window._pendingSave = { rowsToUpsert, planta, contrato, anio };
-}
-
-function closeConfirmModal() {
-  document.getElementById('confirm-modal-bg').classList.remove('open');
-  window._pendingSave = null;
-}
-
-async function confirmSaveData() {
-  closeConfirmModal();
-  if (!window._pendingSave) return;
-  const { rowsToUpsert, planta, contrato, anio } = window._pendingSave;
-  await _doSaveData(rowsToUpsert, planta, contrato, anio);
-}
-
-async function _doSaveData(rowsToUpsert, planta, contrato, anio) {
-  const btn = document.getElementById('btn-guardar');
-  const st  = document.getElementById('save-status');
-  const stTxt = document.getElementById('save-status-text');
-  btn.disabled = true;
-  stTxt.textContent = 'Guardando…'; st.className = 'save-status show';
 
   const ok = await versionedSave({
     username: currentUser.username,
@@ -1376,11 +1615,6 @@ async function _doSaveData(rowsToUpsert, planta, contrato, anio) {
   stTxt.textContent = ok ? '✓ Guardado y correo enviado' : '✗ Error al guardar';
   st.className = `save-status ${ok?'ok':'err'} show`;
   btn.disabled = false;
-  // Actualizar snapshot para futuros cambios
-  if (ok) {
-    originalCache = JSON.parse(JSON.stringify(volCache));
-    dirtyCache = {};
-  }
   setTimeout(() => { st.className = 'save-status'; }, 3000);
 }
 
@@ -1431,6 +1665,7 @@ async function initAdminVolumes() {
   renderDropdown('dd-users-list',    allUsers,    'username', 'nombre', selUsers,    'users');
   renderDropdown('dd-plants-list',   allPlants,   'ID_LUGAR_ENTREGA', 'Lugar_Entrega', selPlants, 'plants');
   renderDropdown('dd-products-list', allProducts, 'ID_PRODUCTO', 'Producto', selProducts, 'products');
+  buildAdminHubBtns();
   updateFilterChips();
   renderAdminVolumes();
 }
@@ -1908,21 +2143,37 @@ let activeHub = null;
 function selectHub(hub) {
   if (activeHub === hub) {
     activeHub = null;
-    document.getElementById('hub-btn-aconcagua').classList.remove('active');
-    document.getElementById('hub-btn-sanvicente').classList.remove('active');
     selPlants = allPlants.map(p => p.ID_LUGAR_ENTREGA);
   } else {
     activeHub = hub;
-    document.getElementById('hub-btn-aconcagua').classList.toggle('active', hub==='aconcagua');
-    document.getElementById('hub-btn-sanvicente').classList.toggle('active', hub==='sanvicente');
     const names = HUB_DEFS[hub];
     const filtered = allPlants.filter(p => names.some(n => p.Lugar_Entrega.toLowerCase().includes(n.toLowerCase())));
     selPlants = filtered.length ? filtered.map(p => p.ID_LUGAR_ENTREGA) : allPlants.map(p => p.ID_LUGAR_ENTREGA);
   }
   adminCurrentPlantIdx = 0;
+  buildAdminHubBtns();
   renderDropdown('dd-plants-list', allPlants, 'ID_LUGAR_ENTREGA', 'Lugar_Entrega', selPlants, 'plants');
   updateFilterChips();
   renderAdminVolumes();
+}
+
+// Show only hubs that contain at least one plant from the current admin filter (allPlants).
+// In admin we always show all hubs that have plants in the master plant list.
+function buildAdminHubBtns() {
+  const container = document.getElementById('admin-hub-btns');
+  if (!container) return;
+  const labels = { aconcagua: 'Hub Aconcagua', sanvicente: 'Hub San Vicente' };
+  const html = Object.keys(HUB_DEFS)
+    .filter(hubKey => {
+      const names = HUB_DEFS[hubKey];
+      return allPlants.some(p => names.some(n => p.Lugar_Entrega.toLowerCase().includes(n.toLowerCase())));
+    })
+    .map(hubKey =>
+      `<button class="hub-btn ${activeHub===hubKey?'active':''}" id="hub-btn-${hubKey}" onclick="selectHub('${hubKey}')">${labels[hubKey]}</button>`
+    )
+    .join('');
+  container.innerHTML = html;
+  container.style.display = html ? '' : 'none';
 }
 
 // ─── HUB LOGIC (cliente) ───
@@ -1937,9 +2188,28 @@ function buildHubBtnsClient() {
     const tabsEl = document.getElementById('plant-tabs');
     tabsEl.parentNode.insertBefore(container, tabsEl);
   }
-  container.innerHTML =
-    `<button class="hub-btn ${activeClientHub==='aconcagua'?'active':''}" id="chub-btn-aconcagua" onclick="selectClientHub('aconcagua')">Hub Aconcagua</button>
-     <button class="hub-btn ${activeClientHub==='sanvicente'?'active':''}" id="chub-btn-sanvicente" onclick="selectClientHub('sanvicente')">Hub San Vicente</button>`;
+
+  // Determine which hubs have at least one plant assigned to this client
+  const hubsAvailable = {};
+  Object.keys(HUB_DEFS).forEach(hubKey => {
+    const names = HUB_DEFS[hubKey];
+    const hasPlant = userPlants.some(p =>
+      names.some(n => p.Lugar_Entrega.toLowerCase().includes(n.toLowerCase()))
+    );
+    hubsAvailable[hubKey] = hasPlant;
+  });
+
+  // Build buttons only for hubs with at least one plant
+  const labels = { aconcagua: 'Hub Aconcagua', sanvicente: 'Hub San Vicente' };
+  const html = Object.keys(HUB_DEFS)
+    .filter(hubKey => hubsAvailable[hubKey])
+    .map(hubKey =>
+      `<button class="hub-btn ${activeClientHub===hubKey?'active':''}" id="chub-btn-${hubKey}" onclick="selectClientHub('${hubKey}')">${labels[hubKey]}</button>`
+    )
+    .join('');
+
+  container.innerHTML = html;
+  container.style.display = html ? '' : 'none';
 }
 
 function selectClientHub(hub) {
@@ -1953,6 +2223,10 @@ function selectClientHub(hub) {
 }
 
 async function renderClientHubTable(hub) {
+  // clear individual-plant hub total since this view IS the aggregate
+  const hubTotalEl = document.getElementById('hub-total-container');
+  if (hubTotalEl) hubTotalEl.innerHTML = '';
+
   const names = HUB_DEFS[hub];
   const hubPlants = userPlants.filter(p => names.some(n => p.Lugar_Entrega.toLowerCase().includes(n.toLowerCase())));
   if (!hubPlants.length) {
@@ -1965,8 +2239,10 @@ async function renderClientHubTable(hub) {
   const anio     = parseInt(document.getElementById('sel-year').value);
   const hubLabel = hub==='aconcagua' ? 'Hub Aconcagua' : 'Hub San Vicente';
 
-  document.getElementById('plant-tabs').innerHTML = hubPlants.map(p =>
-    `<button class="tab-btn" style="cursor:default">${p.Lugar_Entrega}</button>`).join('');
+  document.getElementById('plant-tabs').innerHTML = hubPlants.map((p,i) => {
+    const idxInUserPlants = userPlants.findIndex(up => up.ID_LUGAR_ENTREGA === p.ID_LUGAR_ENTREGA);
+    return `<button class="tab-btn" onclick="selectPlant(${idxInUserPlants})">${p.Lugar_Entrega}</button>`;
+  }).join('');
 
   document.getElementById('table-head').innerHTML =
     `<tr><th>${hubLabel}</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr>`;
